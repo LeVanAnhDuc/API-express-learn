@@ -1,9 +1,23 @@
 const Todo = require('../models/todo.model');
 
 const getTodos = async (req, res, next) => {
+    const { pageNo = 1, pageSize = 10 } = req.query;
+
     try {
-        const data = await Todo.find();
-        return res.json({ message: 'Get list todo successfully', data: data });
+        const skipTodo = (pageNo - 1) * pageSize;
+
+        const data = await Todo.find().skip(skipTodo).limit(pageSize);
+
+        const totalItems = await Todo.countDocuments();
+
+        const totalPages = Math.ceil(totalItems / pageSize);
+
+        const perPage = await Todo.countDocuments().skip(skipTodo).limit(pageSize);
+
+        return res.json({
+            message: 'Get list todo successfully',
+            data: { data, currentPage: parseInt(pageNo), perPage, totalItems, totalPages },
+        });
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
