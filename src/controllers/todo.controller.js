@@ -34,8 +34,6 @@ const getTodoByID = async (req, res, next) => {
 
         return res.status(200).json({ message: 'Get one todo successfully', data: data });
     } catch (error) {
-        console.log(error);
-
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
