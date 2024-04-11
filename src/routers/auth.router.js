@@ -1,6 +1,7 @@
 const express = require('express');
-const { registerAccount } = require('../controllers/auth.controller');
+const { registerAccount, loginAccount } = require('../controllers/auth.controller');
 const { validateEmail, requiredFields, checkUniqueValues } = require('../middlewares');
+const { createToken } = require('../middlewares/jwt.middlewares');
 const Account = require('../models/account.model');
 
 const router = express.Router();
@@ -14,6 +15,10 @@ router.post(
         registerAccount(req, res, next);
     },
 );
+
+router.post('/login', requiredFields(['email', 'passWord']), validateEmail, createToken, (req, res, next) => {
+    loginAccount(req, res, next);
+});
 
 router.use((err, req, res, next) => {
     console.error(err.stack);

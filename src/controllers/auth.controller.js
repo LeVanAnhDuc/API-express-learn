@@ -7,10 +7,29 @@ const registerAccount = async (req, res, next) => {
         const newAccount = new Account({ userName, email, passWord });
         await newAccount.save();
 
-        return res.status(201).json({ message: 'register todo successfully', data: newAccount });
+        return res.status(201).json({ message: 'register  successfully', data: newAccount });
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-module.exports = { registerAccount };
+const loginAccount = async (req, res, next) => {
+    const { jwt, infoUser } = req;
+
+    try {
+        return res.status(200).json({
+            message: 'login successfully',
+            data: {
+                token: jwt,
+                infoUser: {
+                    userName: infoUser.userName,
+                    email: infoUser.email,
+                },
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { registerAccount, loginAccount };
