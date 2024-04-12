@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
+import validator from 'validator';
 
 const Schema = mongoose.Schema;
 
@@ -26,4 +26,4 @@ const AccountSchema = new Schema(
     },
 );
 
-module.exports = mongoose.model('Account', AccountSchema);
+export default mongoose.model('Account', AccountSchema);

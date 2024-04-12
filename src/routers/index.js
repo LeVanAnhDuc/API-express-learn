@@ -1,10 +1,10 @@
-const express = require('express');
-const routerToDo = require('./todo.router');
-const routerAuth = require('./auth.router');
+import express from 'express';
+import routerToDo from './todo.router.js';
+import routerAuth from './auth.router.js';
 
 const router = express.Router();
 
 router.use('/auth', routerAuth);
 router.use('/todos', routerToDo);
 
-module.exports = router;
+export default router;

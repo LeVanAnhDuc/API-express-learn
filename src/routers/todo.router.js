@@ -1,6 +1,7 @@
-const express = require('express');
-const { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo } = require('../controllers/todo.controller');
-const { requiredFields, emptyObject, isIDObject } = require('../middlewares');
+import express from 'express';
+import { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo } from '../controllers/todo.controller.js';
+import { requiredFields, emptyObject, isIDObject } from '../middlewares/index.js';
+
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
@@ -28,4 +29,4 @@ router.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong' });
 });
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const validator = require('validator');
-const lodash = require('lodash');
-const { isValidObjectId } = require('mongoose');
+import validator from 'validator';
+import lodash from 'lodash';
+import { isValidObjectId } from 'mongoose';
 
 const validateEmail = (req, res, next) => {
     const { email } = req.body;
@@ -65,4 +65,4 @@ const isIDObject = (req, res, next) => {
     next();
 };
 
-module.exports = { validateEmail, requiredFields, checkUniqueValues, emptyObject, isIDObject };
+export { validateEmail, requiredFields, checkUniqueValues, emptyObject, isIDObject };

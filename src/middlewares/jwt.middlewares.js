@@ -1,6 +1,6 @@
-const Account = require('../models/account.model');
-const jwt = require('jsonwebtoken');
-const { secretKey } = require('../constants');
+import Account from '../models/account.model.js';
+import jwt from 'jsonwebtoken';
+import { secretKey } from '../constants/index.js';
 
 const createToken = async (req, res, next) => {
     const { email, passWord } = req.body;
@@ -29,4 +29,4 @@ const createToken = async (req, res, next) => {
     next();
 };
 
-module.exports = { createToken };
+export { createToken };

@@ -1,4 +1,4 @@
-const Account = require('../models/account.model');
+import Account from '../models/account.model.js';
 
 const registerAccount = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
@@ -32,4 +32,4 @@ const loginAccount = async (req, res, next) => {
     }
 };
 
-module.exports = { registerAccount, loginAccount };
+export { registerAccount, loginAccount };

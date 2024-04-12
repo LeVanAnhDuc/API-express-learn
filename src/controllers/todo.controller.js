@@ -1,4 +1,4 @@
-const Todo = require('../models/todo.model');
+import Todo from '../models/todo.model.js';
 
 const getTodos = async (req, res, next) => {
     const { pageNo = 1, pageSize = 10 } = req.query;
@@ -85,10 +85,4 @@ const deleteTodo = async (req, res, next) => {
     }
 };
 
-module.exports = {
-    getTodos,
-    getTodoByID,
-    addTodo,
-    updateTodo,
-    deleteTodo,
-};
+export { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo };

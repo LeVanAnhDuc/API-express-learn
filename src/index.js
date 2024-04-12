@@ -1,13 +1,13 @@
-const express = require('express');
-const helmet = require('helmet');
-const router = require('./routers');
-const db = require('./config/dbMonggo');
+import express from 'express';
+import helmet from 'helmet';
+import router from './routers/index.js';
+import dbConnect from './config/dbMonggo/index.js';
 
 const port = 3000;
 const app = express();
 
 // connect db
-db.connect();
+dbConnect();
 
 //init middleware
 app.use(express.json());

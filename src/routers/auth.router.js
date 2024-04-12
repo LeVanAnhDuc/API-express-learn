@@ -1,8 +1,8 @@
-const express = require('express');
-const { registerAccount, loginAccount } = require('../controllers/auth.controller');
-const { validateEmail, requiredFields, checkUniqueValues } = require('../middlewares');
-const { createToken } = require('../middlewares/jwt.middlewares');
-const Account = require('../models/account.model');
+import express from 'express';
+import { registerAccount, loginAccount } from '../controllers/auth.controller.js';
+import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/index.js';
+import { createToken } from '../middlewares/jwt.middlewares.js';
+import Account from '../models/account.model.js';
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong' });
 });
 
-module.exports = router;
+export default router;

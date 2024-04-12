@@ -1,5 +1,3 @@
 const secretKey = 'LeVanAnhDuc';
 
-module.exports = {
-    secretKey,
-};
+export { secretKey };
