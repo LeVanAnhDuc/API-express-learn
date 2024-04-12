@@ -1,7 +1,6 @@
 import express from 'express';
 import { registerAccount, loginAccount } from '../controllers/auth.controller.js';
 import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/index.js';
-import { createToken } from '../middlewares/jwt.middlewares.js';
 import Account from '../models/account.model.js';
 
 const router = express.Router();
@@ -16,7 +15,7 @@ router.post(
     },
 );
 
-router.post('/login', requiredFields(['email', 'passWord']), validateEmail, createToken, (req, res, next) => {
+router.post('/login', requiredFields(['email', 'passWord']), validateEmail, (req, res, next) => {
     loginAccount(req, res, next);
 });
 

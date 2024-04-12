@@ -1,32 +1,23 @@
-import Account from '../models/account.model.js';
+import { createTokenAndFindInfo, createAccount } from '../services/auth.service.js';
 
 const registerAccount = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
 
     try {
-        const newAccount = new Account({ userName, email, passWord });
-        await newAccount.save();
+        const response = await createAccount(userName, email, passWord);
 
-        return res.status(201).json({ message: 'register  successfully', data: newAccount });
+        return res.status(201).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 const loginAccount = async (req, res, next) => {
-    const { jwt, infoUser } = req;
+    const { email, passWord } = req.body;
 
     try {
-        return res.status(200).json({
-            message: 'login successfully',
-            data: {
-                token: jwt,
-                infoUser: {
-                    userName: infoUser.userName,
-                    email: infoUser.email,
-                },
-            },
-        });
+        const response = await createTokenAndFindInfo(email, passWord);
+        return res.json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
