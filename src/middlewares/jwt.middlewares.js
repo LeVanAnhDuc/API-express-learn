@@ -1,6 +1,6 @@
 import Account from '../models/account.model.js';
 import jwt from 'jsonwebtoken';
-import { secretKey } from '../constants/index.js';
+import config from '../config/index.js';
 
 const createToken = async (req, res, next) => {
     const { email, passWord } = req.body;
@@ -16,7 +16,7 @@ const createToken = async (req, res, next) => {
                 {
                     id: infoUser._id,
                 },
-                secretKey,
+                config.JWT_ACCESS_SECRET,
             );
             req.infoUser = infoUser;
         } else {
