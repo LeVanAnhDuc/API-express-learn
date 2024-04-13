@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerAccount, loginAccount } from '../controllers/auth.controller.js';
-import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/index.js';
+import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware.js';
 import Account from '../models/account.model.js';
 
 const router = express.Router();

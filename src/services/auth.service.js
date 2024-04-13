@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import Account from '../models/account.model.js';
 import { generatePairToken } from '../utils/index.js';
 
-export const createTokenAndFindInfo = async (email, passWord) => {
+export const loginAccountService = async (email, passWord) => {
     try {
         const infoUser = await Account.findOne({
             email,
@@ -38,7 +38,7 @@ export const createTokenAndFindInfo = async (email, passWord) => {
     }
 };
 
-export const createAccount = async (userName, email, passWord) => {
+export const registerAccountService = async (userName, email, passWord) => {
     try {
         const hashPassWord = await bcrypt.hashSync(passWord, 10);
 

@@ -1,10 +1,10 @@
-import { createTokenAndFindInfo, createAccount } from '../services/auth.service.js';
+import { loginAccountService, registerAccountService } from '../services/auth.service.js';
 
-const registerAccount = async (req, res, next) => {
+export const registerAccount = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
 
     try {
-        const response = await createAccount(userName, email, passWord);
+        const response = await registerAccountService(userName, email, passWord);
 
         return res.status(201).json(response);
     } catch (error) {
@@ -12,15 +12,13 @@ const registerAccount = async (req, res, next) => {
     }
 };
 
-const loginAccount = async (req, res, next) => {
+export const loginAccount = async (req, res, next) => {
     const { email, passWord } = req.body;
 
     try {
-        const response = await createTokenAndFindInfo(email, passWord);
+        const response = await loginAccountService(email, passWord);
         return res.json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-export { registerAccount, loginAccount };

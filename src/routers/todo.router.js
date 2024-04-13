@@ -1,6 +1,7 @@
 import express from 'express';
 import { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo } from '../controllers/todo.controller.js';
-import { requiredFields, emptyObject, isIDObject } from '../middlewares/index.js';
+import { requiredFields, emptyObject, isIDObject } from '../middlewares/validate.middleware.js';
+import { authorMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -16,11 +17,11 @@ router.post('/', requiredFields(['name', 'description']), (req, res, next) => {
     addTodo(req, res, next);
 });
 
-router.put('/:id', isIDObject, emptyObject, (req, res, next) => {
+router.put('/:id', authorMiddleware, isIDObject, emptyObject, (req, res, next) => {
     updateTodo(req, res, next);
 });
 
-router.delete('/:id', isIDObject, (req, res, next) => {
+router.delete('/:id', authorMiddleware, isIDObject, (req, res, next) => {
     deleteTodo(req, res, next);
 });
 
