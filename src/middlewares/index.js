@@ -14,6 +14,7 @@ const validateEmail = (req, res, next) => {
 
 const requiredFields = (fields) => (req, res, next) => {
     const errors = [];
+
     fields.forEach((field) => {
         if (!req.body[field]) {
             errors.push(`${field} is required`);
@@ -59,9 +60,11 @@ const emptyObject = (req, res, next) => {
 
 const isIDObject = (req, res, next) => {
     const { id } = req.params;
+
     if (id && !isValidObjectId(id)) {
         return res.status(400).json({ error: 'id not valid' });
     }
+
     next();
 };
 

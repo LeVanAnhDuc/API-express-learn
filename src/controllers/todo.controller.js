@@ -1,88 +1,68 @@
-import Todo from '../models/todo.model.js';
+import {
+    getTodosService,
+    getTodoByIDService,
+    addTodoService,
+    updateTodoService,
+    deleteTodoService,
+} from '../services/todo.service.js';
 
-const getTodos = async (req, res, next) => {
+export const getTodos = async (req, res, next) => {
     const { pageNo = 1, pageSize = 10 } = req.query;
 
     try {
-        const skipTodo = (pageNo - 1) * pageSize;
+        const response = await getTodosService(pageNo, pageSize);
 
-        const data = await Todo.find().skip(skipTodo).limit(pageSize);
-
-        const totalItems = await Todo.countDocuments();
-
-        const totalPages = Math.ceil(totalItems / pageSize);
-
-        const perPage = await Todo.countDocuments().skip(skipTodo).limit(pageSize);
-
-        return res.json({
-            message: 'Get list todo successfully',
-            data: { data, currentPage: parseInt(pageNo), perPage, totalItems, totalPages },
-        });
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-const getTodoByID = async (req, res, next) => {
+export const getTodoByID = async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        const data = await Todo.findOne({ _id: id });
-        if (!data) {
-            return res.status(400).json({ message: 'Todo not found' });
-        }
+        const response = await getTodoByIDService(id);
 
-        return res.status(200).json({ message: 'Get one todo successfully', data: data });
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-const addTodo = async (req, res, next) => {
+export const addTodo = async (req, res, next) => {
     const { name, description } = req.body;
 
     try {
-        const newTodo = new Todo({ name, description });
-        await newTodo.save();
+        const response = await addTodoService(name, description);
 
-        return res.status(201).json({ message: 'add todo successfully', data: newTodo });
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-const updateTodo = async (req, res, next) => {
+export const updateTodo = async (req, res, next) => {
     const updatedTodoData = req.body;
     const { id } = req.params;
-    const date = new Date();
 
     try {
-        const updatedTodo = await Todo.findByIdAndUpdate(id, { ...updatedTodoData, updatedAt: date }, { new: true });
+        const response = await updateTodoService(updatedTodoData, id);
 
-        if (!updatedTodo) {
-            return res.status(404).json({ error: 'Todo not found' });
-        }
-
-        return res.json({ message: 'add todo successfully', data: updatedTodo });
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-const deleteTodo = async (req, res, next) => {
+export const deleteTodo = async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        const deletedTodo = await Todo.findByIdAndDelete(id);
+        const response = await deleteTodoService(id);
 
-        if (!deletedTodo) {
-            return res.status(404).json({ error: 'Todo not found' });
-        }
-
-        return res.json({ message: 'Todo deleted successfully', data: deletedTodo });
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
-export { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo };
