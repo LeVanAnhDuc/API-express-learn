@@ -1,5 +1,9 @@
 import express from 'express';
-import { registerAccountController, loginAccountController } from '../controllers/auth.controller.js';
+import {
+    registerAccountController,
+    loginAccountController,
+    getAccessTokenController,
+} from '../controllers/auth.controller.js';
 import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware.js';
 import Account from '../models/account.model.js';
 
@@ -17,6 +21,10 @@ router.post(
 
 router.post('/login', requiredFields(['email', 'passWord']), validateEmail, (req, res, next) => {
     loginAccountController(req, res, next);
+});
+
+router.post('/refresh-token', (req, res, next) => {
+    getAccessTokenController(req, res, next);
 });
 
 router.use((err, req, res, next) => {

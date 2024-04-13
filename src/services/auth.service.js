@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import Account from '../models/account.model.js';
-import { generatePairToken } from '../utils/index.js';
+import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils/index.js';
 
 export const loginAccountService = async (email, passWord) => {
     try {
@@ -34,7 +34,7 @@ export const loginAccountService = async (email, passWord) => {
             return { error: 'Email or password is wrong' };
         }
     } catch (error) {
-        return { error: 'Internal server error ser' };
+        return { error: 'Internal server error' };
     }
 };
 
@@ -48,6 +48,43 @@ export const registerAccountService = async (userName, email, passWord) => {
 
         return { message: 'register  successfully', data: newAccount };
     } catch (error) {
-        return { error: 'Internal server error ser' };
+        return { error: 'Internal server error' };
+    }
+};
+
+export const getAccessTokenService = async (req) => {
+    try {
+        if (!req.headers?.authorization) {
+            return {
+                status: 404,
+                message: 'token is not found',
+            };
+        }
+
+        const refreshToken = req.headers.authorization.split(' ')[1];
+
+        if (!refreshToken) {
+            return {
+                status: 404,
+                message: 'refreshToken is not found',
+            };
+        }
+
+        const payload = await decodeRefreshToken(refreshToken);
+
+        if (!payload) {
+            return {
+                status: 401,
+                message: 'Refresh Token is expire. Back login to get token',
+            };
+        }
+
+        const accessToken = await generateAccessToken({
+            id: payload.id,
+        });
+
+        return { status: 200, message: 'get access token successfully', data: { accessToken, refreshToken } };
+    } catch (error) {
+        return { status: 500, error: 'Internal server error' };
     }
 };

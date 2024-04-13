@@ -1,4 +1,4 @@
-import { loginAccountService, registerAccountService } from '../services/auth.service.js';
+import { loginAccountService, registerAccountService, getAccessTokenService } from '../services/auth.service.js';
 
 export const registerAccountController = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
@@ -18,6 +18,15 @@ export const loginAccountController = async (req, res, next) => {
     try {
         const response = await loginAccountService(email, passWord);
         return res.json(response);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+export const getAccessTokenController = async (req, res, next) => {
+    try {
+        const response = await getAccessTokenService(req);
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }

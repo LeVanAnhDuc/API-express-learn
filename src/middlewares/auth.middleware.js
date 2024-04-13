@@ -11,7 +11,7 @@ export const authorMiddleware = async (req, res, next) => {
 
     if (!accessToken) {
         return res.status(404).json({
-            message: 'token is not found',
+            message: 'accessToken is not found',
         });
     }
 

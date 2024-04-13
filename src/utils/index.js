@@ -8,12 +8,21 @@ export const generatePairToken = (payload) => {
     });
     const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
         algorithm: 'HS256',
-        expiresIn: '7d',
+        expiresIn: '7day',
     });
     return {
         accessToken,
         refreshToken,
     };
+};
+
+export const generateAccessToken = (payload) => {
+    const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
+        algorithm: 'HS256',
+        expiresIn: '15m',
+    });
+
+    return accessToken;
 };
 
 export const decodeRefreshToken = (token) => {
