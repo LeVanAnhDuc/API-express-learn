@@ -1,5 +1,5 @@
 import express from 'express';
-import { registerAccount, loginAccount } from '../controllers/auth.controller.js';
+import { registerAccountController, loginAccountController } from '../controllers/auth.controller.js';
 import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware.js';
 import Account from '../models/account.model.js';
 
@@ -11,12 +11,12 @@ router.post(
     checkUniqueValues(['userName', 'email'], Account),
     validateEmail,
     (req, res, next) => {
-        registerAccount(req, res, next);
+        registerAccountController(req, res, next);
     },
 );
 
 router.post('/login', requiredFields(['email', 'passWord']), validateEmail, (req, res, next) => {
-    loginAccount(req, res, next);
+    loginAccountController(req, res, next);
 });
 
 router.use((err, req, res, next) => {

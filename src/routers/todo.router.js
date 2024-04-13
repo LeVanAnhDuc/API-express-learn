@@ -1,28 +1,34 @@
 import express from 'express';
-import { getTodos, getTodoByID, addTodo, updateTodo, deleteTodo } from '../controllers/todo.controller.js';
+import {
+    getTodosController,
+    getTodoByIDController,
+    addTodoController,
+    updateTodoController,
+    deleteTodoController,
+} from '../controllers/todo.controller.js';
 import { requiredFields, emptyObject, isIDObject } from '../middlewares/validate.middleware.js';
 import { authorMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-    getTodos(req, res, next);
+    getTodosController(req, res, next);
 });
 
 router.get('/:id', isIDObject, (req, res, next) => {
-    getTodoByID(req, res, next);
+    getTodoByIDController(req, res, next);
 });
 
 router.post('/', requiredFields(['name', 'description']), (req, res, next) => {
-    addTodo(req, res, next);
+    addTodoController(req, res, next);
 });
 
 router.put('/:id', authorMiddleware, isIDObject, emptyObject, (req, res, next) => {
-    updateTodo(req, res, next);
+    updateTodoController(req, res, next);
 });
 
 router.delete('/:id', authorMiddleware, isIDObject, (req, res, next) => {
-    deleteTodo(req, res, next);
+    deleteTodoController(req, res, next);
 });
 
 router.use((err, req, res, next) => {

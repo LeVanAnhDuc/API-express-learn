@@ -6,7 +6,7 @@ import {
     deleteTodoService,
 } from '../services/todo.service.js';
 
-export const getTodos = async (req, res, next) => {
+export const getTodosController = async (req, res, next) => {
     const { pageNo = 1, pageSize = 10 } = req.query;
 
     try {
@@ -18,7 +18,7 @@ export const getTodos = async (req, res, next) => {
     }
 };
 
-export const getTodoByID = async (req, res, next) => {
+export const getTodoByIDController = async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -30,7 +30,7 @@ export const getTodoByID = async (req, res, next) => {
     }
 };
 
-export const addTodo = async (req, res, next) => {
+export const addTodoController = async (req, res, next) => {
     const { name, description } = req.body;
 
     try {
@@ -42,7 +42,7 @@ export const addTodo = async (req, res, next) => {
     }
 };
 
-export const updateTodo = async (req, res, next) => {
+export const updateTodoController = async (req, res, next) => {
     const updatedTodoData = req.body;
     const { id } = req.params;
 
@@ -55,7 +55,7 @@ export const updateTodo = async (req, res, next) => {
     }
 };
 
-export const deleteTodo = async (req, res, next) => {
+export const deleteTodoController = async (req, res, next) => {
     const { id } = req.params;
 
     try {

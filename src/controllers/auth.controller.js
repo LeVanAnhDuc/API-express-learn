@@ -1,6 +1,6 @@
 import { loginAccountService, registerAccountService } from '../services/auth.service.js';
 
-export const registerAccount = async (req, res, next) => {
+export const registerAccountController = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
 
     try {
@@ -12,7 +12,7 @@ export const registerAccount = async (req, res, next) => {
     }
 };
 
-export const loginAccount = async (req, res, next) => {
+export const loginAccountController = async (req, res, next) => {
     const { email, passWord } = req.body;
 
     try {
