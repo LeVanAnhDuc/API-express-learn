@@ -6,7 +6,7 @@ export const registerAccountController = async (req, res, next) => {
     try {
         const response = await registerAccountService(userName, email, passWord);
 
-        return res.status(201).json(response);
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
@@ -17,7 +17,7 @@ export const loginAccountController = async (req, res, next) => {
 
     try {
         const response = await loginAccountService(email, passWord);
-        return res.json(response);
+        return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }

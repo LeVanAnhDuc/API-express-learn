@@ -17,6 +17,7 @@ export const loginAccountService = async (email, passWord) => {
                 });
 
                 return {
+                    status: 200,
                     message: 'login successfully',
                     data: {
                         accessToken,
@@ -28,13 +29,13 @@ export const loginAccountService = async (email, passWord) => {
                     },
                 };
             } else {
-                return { error: 'Email or password is wrong' };
+                return { status: 400, error: 'Email or password is wrong' };
             }
         } else {
-            return { error: 'Email or password is wrong' };
+            return { status: 400, error: 'Email or password is wrong' };
         }
     } catch (error) {
-        return { error: 'Internal server error' };
+        return { status: 500, error: 'Internal server error' };
     }
 };
 
@@ -46,9 +47,9 @@ export const registerAccountService = async (userName, email, passWord) => {
 
         await newAccount.save();
 
-        return { message: 'register  successfully', data: newAccount };
+        return { status: 200, message: 'register  successfully', data: newAccount };
     } catch (error) {
-        return { error: 'Internal server error' };
+        return { status: 500, error: 'Internal server error' };
     }
 };
 
