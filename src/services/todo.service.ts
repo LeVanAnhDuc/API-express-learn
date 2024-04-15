@@ -1,7 +1,10 @@
 import Todo from '../models/todo.model';
+import { CreateTodoDTO, GetTodosQueryParamsDTO, UpdateTodoDTO } from '../dto/todo.dto';
 
-export const getTodosService = async (pageNo, pageSize) => {
+export const getTodosService = async (query: GetTodosQueryParamsDTO) => {
     try {
+        const { pageSize, pageNo } = query;
+
         const skipTodo = (pageNo - 1) * pageSize;
 
         const data = await Todo.find().skip(skipTodo).limit(pageSize);
@@ -15,16 +18,17 @@ export const getTodosService = async (pageNo, pageSize) => {
         return {
             status: 200,
             message: 'Get list todo successfully',
-            data: { data, currentPage: parseInt(pageNo), perPage, totalItems, totalPages },
+            data: { data, currentPage: pageNo, perPage, totalItems, totalPages },
         };
     } catch (error) {
         return { status: 500, error: 'Internal server error' };
     }
 };
 
-export const getTodoByIDService = async (id) => {
+export const getTodoByIDService = async (id: string) => {
     try {
         const data = await Todo.findOne({ _id: id });
+
         if (!data) {
             return { status: 404, message: 'Todo not found' };
         }
@@ -35,8 +39,9 @@ export const getTodoByIDService = async (id) => {
     }
 };
 
-export const addTodoService = async (name, description) => {
+export const addTodoService = async (body: CreateTodoDTO) => {
     try {
+        const { name, description } = body;
         const newTodo = new Todo({ name, description });
         await newTodo.save();
 
@@ -46,7 +51,7 @@ export const addTodoService = async (name, description) => {
     }
 };
 
-export const updateTodoService = async (updatedTodoData, id) => {
+export const updateTodoService = async (updatedTodoData: UpdateTodoDTO, id: string) => {
     try {
         const date = new Date();
 
@@ -62,7 +67,7 @@ export const updateTodoService = async (updatedTodoData, id) => {
     }
 };
 
-export const deleteTodoService = async (id) => {
+export const deleteTodoService = async (id: string) => {
     try {
         const deletedTodo = await Todo.findByIdAndDelete(id);
 

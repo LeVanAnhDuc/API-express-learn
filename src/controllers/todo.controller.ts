@@ -1,3 +1,6 @@
+import { plainToClass } from 'class-transformer';
+import { NextFunction, Request, Response } from 'express';
+
 import {
     getTodosService,
     getTodoByIDService,
@@ -5,12 +8,12 @@ import {
     updateTodoService,
     deleteTodoService,
 } from '../services/todo.service';
+import { GetTodosQueryParamsDTO } from '../dto/todo.dto';
 
-export const getTodosController = async (req, res, next) => {
-    const { pageNo = 1, pageSize = 10 } = req.query;
-
+export const getTodosController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await getTodosService(pageNo, pageSize);
+        const query = plainToClass(GetTodosQueryParamsDTO, req.query);
+        const response = await getTodosService(query);
 
         return res.status(response.status).json(response);
     } catch (error) {
@@ -18,7 +21,7 @@ export const getTodosController = async (req, res, next) => {
     }
 };
 
-export const getTodoByIDController = async (req, res, next) => {
+export const getTodoByIDController = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     try {
@@ -30,18 +33,16 @@ export const getTodoByIDController = async (req, res, next) => {
     }
 };
 
-export const addTodoController = async (req, res, next) => {
-    const { name, description } = req.body;
-
+export const addTodoController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await addTodoService(name, description);
+        const response = await addTodoService(req.body);
         return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-export const updateTodoController = async (req, res, next) => {
+export const updateTodoController = async (req: Request, res: Response, next: NextFunction) => {
     const updatedTodoData = req.body;
     const { id } = req.params;
 
@@ -54,7 +55,7 @@ export const updateTodoController = async (req, res, next) => {
     }
 };
 
-export const deleteTodoController = async (req, res, next) => {
+export const deleteTodoController = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     try {

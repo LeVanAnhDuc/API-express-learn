@@ -12,7 +12,7 @@ const AccountSchema = new Schema(
             unique: true,
             required: true,
             validate: {
-                validator: validator.isEmail,
+                validator: (value: string) => validator.isEmail(value),
                 message: 'Invalid email address',
             },
         },
