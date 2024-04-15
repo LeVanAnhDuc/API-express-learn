@@ -23,9 +23,9 @@ export const loginAccountController = async (req, res, next) => {
     }
 };
 
-export const getAccessTokenController = async (req, res, next) => {
+export const refreshTokenController = async (req, res, next) => {
     try {
-        const response = await getAccessTokenService(req);
+        const response = await refreshTokenService(req);
         return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });

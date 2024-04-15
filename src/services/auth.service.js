@@ -53,7 +53,7 @@ export const registerAccountService = async (userName, email, passWord) => {
     }
 };
 
-export const getAccessTokenService = async (req) => {
+export const refreshTokenService = async (req) => {
     try {
         if (!req.headers?.authorization) {
             return {

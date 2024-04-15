@@ -2,7 +2,7 @@ import express from 'express';
 import {
     registerAccountController,
     loginAccountController,
-    getAccessTokenController,
+    refreshTokenController,
 } from '../controllers/auth.controller.js';
 import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware.js';
 import Account from '../models/account.model.js';
@@ -24,7 +24,7 @@ router.post('/login', requiredFields(['email', 'passWord']), validateEmail, (req
 });
 
 router.post('/refresh-token', (req, res, next) => {
-    getAccessTokenController(req, res, next);
+    refreshTokenController(req, res, next);
 });
 
 router.use((err, req, res, next) => {
