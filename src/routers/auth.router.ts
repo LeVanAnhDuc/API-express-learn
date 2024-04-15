@@ -4,22 +4,22 @@ import {
     loginAccountController,
     refreshTokenController,
 } from '../controllers/auth.controller';
-import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware';
+import { checkUniqueValues, validateFieldsRequestBody } from '../middlewares/validate.middleware';
 import Account from '../models/account.model';
+import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
 
 const router = express.Router();
 
 router.post(
     '/signup',
-    requiredFields(['userName', 'email', 'passWord']),
+    validateFieldsRequestBody(CreateAccountDTO),
     checkUniqueValues(['userName', 'email'], Account),
-    validateEmail,
     (req, res, next) => {
         registerAccountController(req, res, next);
     },
 );
 
-router.post('/login', requiredFields(['email', 'passWord']), validateEmail, (req, res, next) => {
+router.post('/login', validateFieldsRequestBody(LoginAccountDTO), (req, res, next) => {
     loginAccountController(req, res, next);
 });
 

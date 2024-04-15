@@ -1,8 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 const Schema = mongoose.Schema;
+interface ITodo extends Document {
+    name: string;
+    description: string;
+    isStatus: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
-const TodoSchema = new Schema(
+const TodoSchema = new Schema<ITodo>(
     {
         name: { type: String, trim: true },
         description: { type: String, trim: true },
@@ -15,4 +22,6 @@ const TodoSchema = new Schema(
     },
 );
 
-export default mongoose.model('Todo', TodoSchema);
+const Todo = mongoose.model<ITodo>('Todo', TodoSchema);
+
+export default Todo;

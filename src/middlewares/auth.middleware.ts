@@ -1,6 +1,7 @@
-import { decodeAccessToken } from '../utils';
+import { Request, Response, NextFunction } from 'express';
+import { decodeAccessToken } from '../utils/jwt.util';
 
-export const authorMiddleware = async (req, res, next) => {
+export const authorMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers?.authorization) {
         return res.status(404).json({
             message: 'token is not found',

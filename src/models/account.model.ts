@@ -1,9 +1,18 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import validator from 'validator';
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-const AccountSchema = new Schema(
+interface IAccount extends Document {
+    userName: string;
+    email: string;
+    passWord: string;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const AccountSchema = new Schema<IAccount>(
     {
         userName: { type: String, trim: true, unique: true, required: true },
         email: {
@@ -26,4 +35,6 @@ const AccountSchema = new Schema(
     },
 );
 
-export default mongoose.model('Account', AccountSchema);
+const Account = mongoose.model<IAccount>('Account', AccountSchema);
+
+export default Account;

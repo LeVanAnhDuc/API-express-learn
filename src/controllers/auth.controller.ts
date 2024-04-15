@@ -1,10 +1,9 @@
+import { NextFunction, Request, Response } from 'express';
 import { loginAccountService, registerAccountService, refreshTokenService } from '../services/auth.service';
 
-export const registerAccountController = async (req, res, next) => {
-    const { userName, email, passWord } = req.body;
-
+export const registerAccountController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await registerAccountService(userName, email, passWord);
+        const response = await registerAccountService(req.body);
 
         return res.status(response.status).json(response);
     } catch (error) {
@@ -12,18 +11,16 @@ export const registerAccountController = async (req, res, next) => {
     }
 };
 
-export const loginAccountController = async (req, res, next) => {
-    const { email, passWord } = req.body;
-
+export const loginAccountController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const response = await loginAccountService(email, passWord);
+        const response = await loginAccountService(req.body);
         return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
-export const refreshTokenController = async (req, res, next) => {
+export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const response = await refreshTokenService(req);
         return res.status(response.status).json(response);

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import validator from 'validator';
 import lodash from 'lodash';
-import { isValidObjectId } from 'mongoose';
+import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
 import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer';
 import { validate } from 'class-validator';
 
@@ -61,39 +60,15 @@ export const validateFieldsRequestQuery =
         next();
     };
 
-export const validateEmail = (req: Request, res: Response, next: NextFunction) => {
-    const { email } = req.body;
-
-    if (email && !validator.isEmail(email)) {
-        return res.status(400).json({ error: 'Invalid email address' });
-    }
-
-    next();
-};
-
-export const requiredFields = (fields: string[]) => (req: Request, res: Response, next: NextFunction) => {
-    const errors = [];
-
-    fields.forEach((field) => {
-        if (!req.body[field]) {
-            errors.push(`${field} is required`);
-        }
-    });
-
-    if (errors.length > 0) {
-        return res.status(400).json({ error: errors.join(', ') });
-    }
-
-    next();
-};
-
 export const checkUniqueValues =
-    (fields: string[], model) => async (req: Request, res: Response, next: NextFunction) => {
+    <T extends Document>(fields: string[], model: Model<T>) =>
+    async (req: Request, res: Response, next: NextFunction) => {
         const errors = [];
 
         for (const field of fields) {
             try {
-                const fieldExist = await model.exists({ [field]: req.body[field] });
+                const query: FilterQuery<T> = { [field]: req.body[field] } as FilterQuery<T>;
+                const fieldExist = await model.exists(query);
 
                 if (fieldExist) {
                     errors.push(`${field} is exist`);

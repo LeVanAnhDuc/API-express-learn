@@ -1,16 +1,35 @@
-import bcrypt from 'bcrypt';
-
+import { Request } from 'express';
 import Account from '../models/account.model';
-import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils';
+import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils/jwt.util';
+import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
+import { hashPassword, isValidPassword } from '../utils/hashing.util';
 
-export const loginAccountService = async (email, passWord) => {
+export const registerAccountService = async (body: CreateAccountDTO) => {
     try {
+        const { userName, email, passWord } = body;
+
+        const hashPassWord = await hashPassword(passWord);
+
+        const newAccount = await new Account({ userName, email, passWord: hashPassWord });
+
+        await newAccount.save();
+
+        return { status: 200, message: 'register  successfully', data: newAccount };
+    } catch (error) {
+        return { status: 500, error: 'Internal server error' };
+    }
+};
+
+export const loginAccountService = async (body: LoginAccountDTO) => {
+    try {
+        const { email, passWord } = body;
+
         const infoUser = await Account.findOne({
             email,
         });
 
         if (infoUser) {
-            const passwordMatch = await bcrypt.compare(passWord, infoUser.passWord);
+            const passwordMatch = await isValidPassword(passWord, infoUser.passWord);
             if (passwordMatch) {
                 const { accessToken, refreshToken } = generatePairToken({
                     id: infoUser._id,
@@ -39,21 +58,7 @@ export const loginAccountService = async (email, passWord) => {
     }
 };
 
-export const registerAccountService = async (userName, email, passWord) => {
-    try {
-        const hashPassWord = await bcrypt.hashSync(passWord, 10);
-
-        const newAccount = await new Account({ userName, email, passWord: hashPassWord });
-
-        await newAccount.save();
-
-        return { status: 200, message: 'register  successfully', data: newAccount };
-    } catch (error) {
-        return { status: 500, error: 'Internal server error' };
-    }
-};
-
-export const refreshTokenService = async (req) => {
+export const refreshTokenService = async (req: Request) => {
     try {
         if (!req.headers?.authorization) {
             return {
@@ -62,7 +67,8 @@ export const refreshTokenService = async (req) => {
             };
         }
 
-        const refreshToken = req.headers.authorization.split(' ')[1];
+        const [type, token] = req.headers.authorization?.split(' ') ?? [];
+        const refreshToken = type === 'Bearer' ? token : undefined;
 
         if (!refreshToken) {
             return {
