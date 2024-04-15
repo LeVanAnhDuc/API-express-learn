@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
-import Account from '../models/account.model.js';
-import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils/index.js';
+import Account from '../models/account.model';
+import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils';
 
 export const loginAccountService = async (email, passWord) => {
     try {

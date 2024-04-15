@@ -3,9 +3,9 @@ import {
     registerAccountController,
     loginAccountController,
     refreshTokenController,
-} from '../controllers/auth.controller.js';
-import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware.js';
-import Account from '../models/account.model.js';
+} from '../controllers/auth.controller';
+import { validateEmail, requiredFields, checkUniqueValues } from '../middlewares/validate.middleware';
+import Account from '../models/account.model';
 
 const router = express.Router();
 

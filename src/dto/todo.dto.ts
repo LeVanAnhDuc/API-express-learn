@@ -1,13 +1,13 @@
 import { Expose } from 'class-transformer';
 
 export default class TodoDTO {
-    // @Expose() name;
+    name: string;
 
-    // @Expose() description;
+    description: string;
 
-    // @Expose() isStatus;
+    isStatus: boolean;
 
-    // @Expose() updatedAt;
+    updatedAt: Date;
 
     constructor(name, description, isStatus, updatedAt) {
         this.name = name;

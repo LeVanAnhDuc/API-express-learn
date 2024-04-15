@@ -4,7 +4,7 @@ import {
     addTodoService,
     updateTodoService,
     deleteTodoService,
-} from '../services/todo.service.js';
+} from '../services/todo.service';
 
 export const getTodosController = async (req, res, next) => {
     const { pageNo = 1, pageSize = 10 } = req.query;
@@ -35,7 +35,6 @@ export const addTodoController = async (req, res, next) => {
 
     try {
         const response = await addTodoService(name, description);
-
         return res.status(response.status).json(response);
     } catch (error) {
         return res.status(500).json({ error: 'Internal server error' });

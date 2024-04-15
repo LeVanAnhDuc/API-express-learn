@@ -1,4 +1,4 @@
-import Todo from '../models/todo.model.js';
+import Todo from '../models/todo.model';
 
 export const getTodosService = async (pageNo, pageSize) => {
     try {

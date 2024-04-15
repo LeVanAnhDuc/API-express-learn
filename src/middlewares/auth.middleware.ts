@@ -1,4 +1,4 @@
-import { decodeAccessToken } from '../utils/index.js';
+import { decodeAccessToken } from '../utils';
 
 export const authorMiddleware = async (req, res, next) => {
     if (!req.headers?.authorization) {

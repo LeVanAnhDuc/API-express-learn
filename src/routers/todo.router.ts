@@ -5,9 +5,9 @@ import {
     addTodoController,
     updateTodoController,
     deleteTodoController,
-} from '../controllers/todo.controller.js';
-import { requiredFields, emptyObject, isIDObject } from '../middlewares/validate.middleware.js';
-import { authorMiddleware } from '../middlewares/auth.middleware.js';
+} from '../controllers/todo.controller';
+import { requiredFields, emptyObject, isIDObject } from '../middlewares/validate.middleware';
+import { authorMiddleware } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 

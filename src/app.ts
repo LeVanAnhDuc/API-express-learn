@@ -1,9 +1,9 @@
 import express from 'express';
 import helmet from 'helmet';
 
-import router from './routers/index.js';
-import dbConnect from './db/index.js';
-import config from './config/index.js';
+import router from './routers';
+import dbConnect from './db';
+import config from './config';
 
 const app = express();
 

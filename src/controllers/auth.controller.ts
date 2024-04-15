@@ -1,4 +1,4 @@
-import { loginAccountService, registerAccountService, refreshTokenService } from '../services/auth.service.js';
+import { loginAccountService, registerAccountService, refreshTokenService } from '../services/auth.service';
 
 export const registerAccountController = async (req, res, next) => {
     const { userName, email, passWord } = req.body;
