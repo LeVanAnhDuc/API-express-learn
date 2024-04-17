@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import 'reflect-metadata';
 
 import router from './routers';
-import dbConnect from './db';
+import dbConnect from './dbs/init.mongodb';
 import config from './config';
 
 const app = express();
