@@ -8,6 +8,8 @@ const config = {
     DB_URL: process.env.DB_URL,
     DB_NAME: process.env.DB_NAME,
 
+    REDIS_URL: process.env.REDIS_URL,
+
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
 };

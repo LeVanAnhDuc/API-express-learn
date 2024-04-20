@@ -5,11 +5,13 @@ import 'reflect-metadata';
 import router from './routers';
 import dbConnect from './dbs/init.mongodb';
 import config from './config';
+import { initRedis } from './dbs/init.redis';
 
 const app = express();
 
 // connect db
 dbConnect();
+initRedis();
 
 //init middleware
 app.use(express.json());
