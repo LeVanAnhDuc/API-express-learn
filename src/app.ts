@@ -3,15 +3,14 @@ import helmet from 'helmet';
 import 'reflect-metadata';
 
 import router from './routers';
-import dbConnect from './dbs/init.mongodb';
-import config from './config';
-// import * as redis from './dbs/init.redis';
+import mongo from './dbs/init.mongodb';
 import redis from './dbs/init.redis';
+import config from './config';
 
 const app = express();
 
 // connect db
-dbConnect();
+mongo.connect();
 redis.connectRedis();
 
 //init middleware

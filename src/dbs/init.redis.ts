@@ -42,7 +42,6 @@ class RedisDatabase {
             redisClient.connect();
             this.handleEventConnect(redisClient);
             this.client.redisClient = redisClient;
-            return redisClient;
         }
     };
 

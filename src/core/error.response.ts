@@ -17,3 +17,9 @@ export class RedisErrorResponse extends ErrorResponse {
         super(message, statusCode);
     }
 }
+
+export class MongoErrorResponse extends ErrorResponse {
+    constructor(message = reasonPhrases.INTERNAL_SERVER_ERROR, statusCode = statusCodes.INTERNAL_SERVER_ERROR) {
+        super(message, statusCode);
+    }
+}
