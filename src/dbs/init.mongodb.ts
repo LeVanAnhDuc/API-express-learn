@@ -24,11 +24,9 @@ const MONGO_CONNECT_MESSAGE = {
 class MongoDatabase {
     private static instance: MongoDatabase | null = null;
     private connectionTimeout;
-    private client: Record<string, any>;
 
     constructor() {
         this.connectionTimeout = null;
-        this.client = {};
     }
 
     public static getInstance(): MongoDatabase {
@@ -40,34 +38,35 @@ class MongoDatabase {
 
     public connect = async () => {
         if (config.DB_URL && config.DB_NAME) {
-            const mongoClient = await mongoose.createConnection(config.DB_URL, { dbName: config.DB_NAME });
-            this.handleEventConnect(mongoClient);
-            this.client.mongoClient = mongoClient;
+            this.handleEventConnect();
+            await mongoose.connect(config.DB_URL, {
+                dbName: config.DB_NAME,
+            });
         }
     };
 
-    private handleEventConnect = (mongoClient) => {
-        mongoClient.on(statusConnecMongo.CONNECT, () => {
+    private handleEventConnect = () => {
+        mongoose.connection.on(statusConnecMongo.CONNECT, () => {
             console.log('connected mongo: connected');
             clearTimeout(this.connectionTimeout);
         });
-        mongoClient.on(statusConnecMongo.OPEN, () => {
+        mongoose.connection.on(statusConnecMongo.OPEN, () => {
             console.log('connected mongo: open');
             clearTimeout(this.connectionTimeout);
         });
-        mongoClient.on(statusConnecMongo.DISCONNECT, () => {
+        mongoose.connection.on(statusConnecMongo.DISCONNECT, () => {
             console.log('connected mongo: disconnect');
             this.handleTimeoutError();
         });
-        mongoClient.on(statusConnecMongo.RECONNECT, () => {
+        mongoose.connection.on(statusConnecMongo.RECONNECT, () => {
             console.log('connected mongo: reconnecting');
             clearTimeout(this.connectionTimeout);
         });
-        mongoClient.on(statusConnecMongo.ERROR, (error) => {
+        mongoose.connection.on(statusConnecMongo.ERROR, (error) => {
             console.log(`connected mongo: ${error}`);
             this.handleTimeoutError();
         });
-        mongoClient.on(statusConnecMongo.CLOSE, () => {
+        mongoose.connection.on(statusConnecMongo.CLOSE, () => {
             console.log('connected mongo: close');
             clearTimeout(this.connectionTimeout);
         });

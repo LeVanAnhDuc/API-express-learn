@@ -3,6 +3,7 @@ import Account from '../models/account.model';
 import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils/jwt.util';
 import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
 import { hashPassword, isValidPassword } from '../utils/hashing.util';
+import redis from '../dbs/init.redis';
 
 export const registerAccountService = async (body: CreateAccountDTO) => {
     try {
@@ -34,6 +35,16 @@ export const loginAccountService = async (body: LoginAccountDTO) => {
                 const { accessToken, refreshToken } = generatePairToken({
                     id: infoUser._id,
                 });
+
+                const redisClient = redis.getRedis();
+                redisClient.hSet('accessToken', infoUser._id, accessToken);
+                redisClient.hSet('refreshToken', infoUser._id, refreshToken);
+
+                const expireTimeInSecondsAccToken = Math.floor(Math.random() * 3600) + 3600;
+                const expireTimeInSecondsRefToken = Math.floor(Math.random() * 3600) + 3600;
+
+                redisClient.expire('accessToken', expireTimeInSecondsAccToken);
+                redisClient.expire('refreshToken', expireTimeInSecondsRefToken);
 
                 return {
                     status: 200,
