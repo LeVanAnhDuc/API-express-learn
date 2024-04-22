@@ -7,29 +7,23 @@ import {
 import { checkUniqueValues, validateFieldsRequestBody } from '../middlewares/validate.middleware';
 import Account from '../models/account.model';
 import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
+import { asyncHandler, asyncMiddlewareHandler } from '../helper';
 
 const router = express.Router();
 
 router.post(
     '/signup',
-    validateFieldsRequestBody(CreateAccountDTO),
-    checkUniqueValues(['userName', 'email'], Account),
-    (req, res, next) => {
-        registerAccountController(req, res, next);
-    },
+    asyncMiddlewareHandler(validateFieldsRequestBody(CreateAccountDTO)),
+    asyncMiddlewareHandler(checkUniqueValues(['userName', 'email'], Account)),
+    asyncHandler(registerAccountController),
 );
 
-router.post('/login', validateFieldsRequestBody(LoginAccountDTO), (req, res, next) => {
-    loginAccountController(req, res, next);
-});
+router.post(
+    '/login',
+    asyncMiddlewareHandler(validateFieldsRequestBody(LoginAccountDTO)),
+    asyncHandler(loginAccountController),
+);
 
-router.post('/refresh-token', (req, res, next) => {
-    refreshTokenController(req, res, next);
-});
-
-router.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong' });
-});
+router.post('/refresh-token', asyncHandler(refreshTokenController));
 
 export default router;

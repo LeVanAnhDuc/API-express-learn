@@ -1,7 +1,7 @@
 import { reasonPhrases } from '../utils/reasonPhrases';
 import { statusCodes } from '../utils/statusCodes';
 
-class ErrorResponse extends Error {
+export class ErrorResponse extends Error {
     private status: number;
     private now: number;
 
@@ -9,6 +9,40 @@ class ErrorResponse extends Error {
         super(message);
         this.status = status;
         this.now = Date.now();
+    }
+
+    public getStatus() {
+        return this.status;
+    }
+}
+
+export class ConflictRequestError extends ErrorResponse {
+    constructor(message = reasonPhrases.CONFLICT) {
+        super(message, statusCodes.CONFLICT);
+    }
+}
+
+export class BadRequestError extends ErrorResponse {
+    constructor(message = reasonPhrases.BAD_REQUEST) {
+        super(message, statusCodes.BAD_REQUEST);
+    }
+}
+
+export class ForbiddenError extends ErrorResponse {
+    constructor(message = reasonPhrases.FORBIDDEN) {
+        super(message, statusCodes.FORBIDDEN);
+    }
+}
+
+export class NotFoundError extends ErrorResponse {
+    constructor(message = reasonPhrases.NOT_FOUND) {
+        super(message, statusCodes.NOT_FOUND);
+    }
+}
+
+export class UnauthorizedError extends ErrorResponse {
+    constructor(message = reasonPhrases.UNAUTHORIZED) {
+        super(message, statusCodes.UNAUTHORIZED);
     }
 }
 

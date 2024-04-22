@@ -3,33 +3,27 @@ import lodash from 'lodash';
 import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
 import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer';
 import { validate } from 'class-validator';
+import { BadRequestError } from '../core/error.response';
 
 export const validateFieldsRequestBody =
     <T extends object>(type: ClassConstructor<T>) =>
     async (req: Request, res: Response, next: NextFunction) => {
         const dtoInstance = plainToClass(type, req.body, { excludeExtraneousValues: true });
+        req.body = classToPlain(dtoInstance);
+
         const errorsValidate = await validate(dtoInstance);
 
-        const messageError: {
-            property: string;
-            constraints: { [type: string]: string };
-        }[] = [];
+        let messageError: string = '';
 
-        errorsValidate.forEach((error) =>
-            messageError.push({
-                property: error.property,
-                constraints: error.constraints,
-            }),
-        );
-
-        if (messageError.length > 0) {
-            return res.status(400).json({
-                errors: messageError,
+        errorsValidate.forEach((error) => {
+            Object.values(error.constraints).forEach((constraint) => {
+                messageError += `${constraint}, `;
             });
-        }
+        });
 
-        req.body = classToPlain(dtoInstance);
-        next();
+        if (messageError) {
+            throw new BadRequestError(messageError);
+        }
     };
 
 export const validateFieldsRequestQuery =
@@ -66,23 +60,17 @@ export const checkUniqueValues =
         const errors = [];
 
         for (const field of fields) {
-            try {
-                const query: FilterQuery<T> = { [field]: req.body[field] } as FilterQuery<T>;
-                const fieldExist = await model.exists(query);
+            const query: FilterQuery<T> = { [field]: req.body[field] } as FilterQuery<T>;
+            const fieldExist = await model.exists(query);
 
-                if (fieldExist) {
-                    errors.push(`${field} is exist`);
-                }
-            } catch (error) {
-                return res.status(500).json({ error: 'Internal server error' });
+            if (fieldExist) {
+                errors.push(`${field} is exist`);
             }
         }
 
         if (errors.length > 0) {
-            return res.status(400).json({ error: errors.join(', ') });
+            throw new BadRequestError(errors.join(', '));
         }
-
-        next();
     };
 
 export const requiredBody = (req: Request, res: Response, next: NextFunction) => {
