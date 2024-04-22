@@ -1,15 +1,14 @@
 import { Request } from 'express';
 import Account from '../models/account.model';
-import { generatePairToken, generateAccessToken, decodeRefreshToken } from '../utils/jwt.util';
 import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
-import { hashPassword, isValidPassword } from '../utils/hashing.util';
+import { bcrypt, jwt } from '../libs';
 import redis from '../dbs/init.redis';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../core/error.response';
 
 export const registerAccountService = async (body: CreateAccountDTO) => {
     const { userName, email, passWord } = body;
 
-    const hashPassWord = await hashPassword(passWord);
+    const hashPassWord = await bcrypt.hashPassword(passWord);
 
     const newAccount = await new Account({ userName, email, passWord: hashPassWord });
 
@@ -29,13 +28,13 @@ export const loginAccountService = async (body: LoginAccountDTO) => {
         throw new BadRequestError('Email or password is wrong');
     }
 
-    const passwordMatch = await isValidPassword(passWord, infoUser.passWord);
+    const passwordMatch = await bcrypt.isValidPassword(passWord, infoUser.passWord);
 
     if (!passwordMatch) {
         throw new BadRequestError('Email or password is wrong');
     }
 
-    const { accessToken, refreshToken } = generatePairToken({
+    const { accessToken, refreshToken } = jwt.generatePairToken({
         id: infoUser._id,
     });
 
@@ -74,13 +73,13 @@ export const refreshTokenService = async (req: Request) => {
         throw new NotFoundError('refreshToken is not found');
     }
 
-    const payload = await decodeRefreshToken(refreshToken);
+    const payload = await jwt.decodeRefreshToken(refreshToken);
 
     if (!payload) {
         throw new UnauthorizedError('Refresh Token is expire. Back login to get token');
     }
 
-    const accessToken = await generateAccessToken({
+    const accessToken = await jwt.generateAccessToken({
         id: payload.id,
     });
 
