@@ -30,28 +30,20 @@ export const validateFieldsRequestQuery =
     <T extends object>(type: ClassConstructor<T>) =>
     async (req: Request, res: Response, next: NextFunction) => {
         const dtoInstance = plainToClass(type, req.query, { excludeExtraneousValues: true });
+
         const errorsValidate = await validate(dtoInstance);
 
-        const messageError: {
-            property: string;
-            constraints: { [type: string]: string };
-        }[] = [];
+        let messageError: string = '';
 
-        errorsValidate.forEach((error) =>
-            messageError.push({
-                property: error.property,
-                constraints: error.constraints,
-            }),
-        );
-
-        if (messageError.length > 0) {
-            return res.status(400).json({
-                errors: messageError,
+        errorsValidate.forEach((error) => {
+            Object.values(error.constraints).forEach((constraint) => {
+                messageError += `${constraint}, `;
             });
-        }
+        });
 
-        req.query = classToPlain(dtoInstance);
-        next();
+        if (messageError) {
+            throw new BadRequestError(messageError);
+        }
     };
 
 export const checkUniqueValues =
@@ -75,18 +67,18 @@ export const checkUniqueValues =
 
 export const requiredBody = (req: Request, res: Response, next: NextFunction) => {
     if (lodash.isEmpty(req.body)) {
-        return res.status(400).json({ error: 'data not empty' });
+        throw new BadRequestError('data not empty');
     }
 
-    next();
+    return Promise.resolve();
 };
 
 export const isIDObject = (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     if (id && !isValidObjectId(id)) {
-        return res.status(400).json({ error: 'id not valid' });
+        throw new BadRequestError('id not valid');
     }
 
-    next();
+    return Promise.resolve();
 };

@@ -6,12 +6,14 @@ export class GetTodosQueryParamsDTO {
     @Type(() => Number)
     @IsInt()
     @Min(1)
+    @Transform(({ value }) => value || 1)
     pageNo: number = 1;
 
     @Expose()
     @Type(() => Number)
     @IsInt()
     @Max(120)
+    @Transform(({ value }) => value || 10)
     pageSize: number = 10;
 
     @Expose()
