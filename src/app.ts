@@ -3,16 +3,16 @@ import helmet from 'helmet';
 import 'reflect-metadata';
 
 import router from './routers';
-import mongo from './dbs/init.mongodb';
-import redis from './dbs/init.redis';
+import instanceMongoDatabase from './dbs/init.mongodb';
+import instanceRedis from './dbs/init.redis';
 import config from './config';
 import { handleError, handleNotFound } from './middlewares/handleErrorMiddleware';
 
 const app = express();
 
 // connect db
-mongo.connect();
-redis.connectRedis();
+instanceMongoDatabase;
+instanceRedis;
 
 //init middleware
 app.use(express.json());
