@@ -22,11 +22,11 @@ const REDIS_CONNECT_MESSAGE = {
 class RedisDatabase {
     private static instance: RedisDatabase | null = null;
     private connectionTimeout;
-    private client: Record<string, any>;
+    public client: Record<string, any>;
 
     constructor() {
         this.connectionTimeout = null;
-        this.client = {};
+        this.connectRedis();
     }
 
     public static getInstance(): RedisDatabase {
@@ -36,27 +36,27 @@ class RedisDatabase {
         return this.instance;
     }
 
-    public connectRedis = () => {
+    public connectRedis = async () => {
         if (config.REDIS_URL) {
             const redisClient = createClient({ url: config.REDIS_URL });
             redisClient.connect();
             this.handleEventConnect(redisClient);
-            this.client.redisClient = redisClient;
+            this.client = redisClient;
         }
     };
 
     public getRedis = () => {
-        if (!this.client.redisClient) {
+        if (!this.client) {
             throw new RedisErrorResponse(REDIS_CONNECT_MESSAGE.message.en, REDIS_CONNECT_MESSAGE.code);
         }
-        return this.client.redisClient;
+        return this.client;
     };
 
     public closeRedis = () => {
-        if (this.client.redisClient) {
-            this.client.redisClient.quit();
-            this.handleEventConnect(this.client.redisClient);
-            this.client.redisClient = null;
+        if (this.client) {
+            this.client.quit();
+            this.handleEventConnect(this.client);
+            this.client = null;
         } else {
             throw new RedisErrorResponse(REDIS_CONNECT_MESSAGE.message.en, REDIS_CONNECT_MESSAGE.code);
         }

@@ -15,7 +15,7 @@ const MONGO_CONNECT_TIMEOUT = 10000;
 const MONGO_CONNECT_MESSAGE = {
     code: -99,
     message: {
-        vn: 'redis bị lỗi',
+        vn: 'mongo bị lỗi',
         en: 'service connect mongo error',
     },
 };
@@ -27,6 +27,7 @@ class MongoDatabase {
 
     constructor() {
         this.connectionTimeout = null;
+        this.connect();
     }
 
     public static getInstance(): MongoDatabase {
