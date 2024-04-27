@@ -109,7 +109,7 @@ class Repository extends Cache {
     }
 
     public create = async (object): Promise<any> => {
-        return await this.model.create(object).save();
+        return await this.model.create(object);
     };
 
     public insertMany = async (objects): Promise<any> => {
@@ -117,6 +117,14 @@ class Repository extends Cache {
             upsert: true,
             new: true,
         });
+    };
+
+    public updateMany = async (filter, object) => {
+        return await this.model.updateMany({ ...filter }, { ...object }, { new: true });
+    };
+
+    public deleteMany = async (filter): Promise<any> => {
+        return await this.model.deleteMany(filter);
     };
 
     public find = async (filter, skip: number = 0, limit: number = 0, saveCache = false): Promise<any> => {
@@ -137,11 +145,7 @@ class Repository extends Cache {
         const query = async () => await this.model.findOne({ ...filter });
 
         if (saveCache) {
-            try {
-                return await this.findOneInHsetWithCache({ ...filter }, query);
-            } catch (error) {
-                console.log(error);
-            }
+            return await this.findOneInHsetWithCache({ ...filter }, query);
         }
 
         return await query();
@@ -150,7 +154,7 @@ class Repository extends Cache {
     public findById = async (id, saveCache = false): Promise<any> => {
         const query = async () => await this.model.findById(id);
         if (saveCache) {
-            return await this.findWithCache({ _id: id }, query);
+            return await this.findOneInHsetWithCache({ _id: id }, query);
         }
         return await query();
     };
@@ -160,11 +164,7 @@ class Repository extends Cache {
     };
 
     public findOneAndUpdate = async (filter, object): Promise<any> => {
-        return await this.model.findByIdAndUpdate({ ...filter }, { ...object }, { new: true });
-    };
-
-    public updateMany = async (filter, object) => {
-        return await this.model.updateMany({ ...filter }, { ...object }, { new: true });
+        return await this.model.findOneAndUpdate({ ...filter }, { ...object }, { new: true });
     };
 
     public findByIdAndDelete = async (id): Promise<any> => {
@@ -172,11 +172,7 @@ class Repository extends Cache {
     };
 
     public findOneAndDelete = async (filter): Promise<any> => {
-        return await this.model.findByIdAndDelete({ ...filter });
-    };
-
-    public deleteMany = async (filter): Promise<any> => {
-        return await this.model.deleteMany(filter);
+        return await this.model.findOneAndDelete({ ...filter });
     };
 
     public countDocuments = async (filter): Promise<any> => {
