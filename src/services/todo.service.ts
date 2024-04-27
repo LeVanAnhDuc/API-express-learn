@@ -1,19 +1,20 @@
-import Todo from '../models/todo.model';
 import { CreateTodoDTO, GetTodosQueryParamsDTO, UpdateTodoDTO } from '../dto/todo.dto';
 import { BadRequestError, NotFoundError } from '../core/error.response';
+import { todoRepo } from '../repositories';
 
 export const getTodosService = async (query: GetTodosQueryParamsDTO) => {
     const { pageSize, pageNo } = query;
 
     const skipTodo = (pageNo - 1) * pageSize;
 
-    const data = await Todo.find().skip(skipTodo).limit(pageSize);
-
-    const totalItems = await Todo.countDocuments();
+    const [data, totalItems] = await Promise.all([
+        todoRepo.getTodosRepo(...Object.values({ filter: {}, skip: skipTodo, limit: pageSize, saveCache: false })),
+        todoRepo.getCountTodosRepo(),
+    ]);
 
     const totalPages = Math.ceil(totalItems / pageSize);
 
-    const perPage = await Todo.countDocuments().skip(skipTodo).limit(pageSize);
+    const perPage = data.length;
 
     return {
         message: 'Get list todo successfully',
@@ -22,7 +23,7 @@ export const getTodosService = async (query: GetTodosQueryParamsDTO) => {
 };
 
 export const getTodoByIDService = async (id: string) => {
-    const data = await Todo.findOne({ _id: id });
+    const data = await todoRepo.getTodoByIDRepo(id, false);
 
     if (!data) {
         throw new NotFoundError('Todo not found');
@@ -33,16 +34,16 @@ export const getTodoByIDService = async (id: string) => {
 
 export const addTodoService = async (body: CreateTodoDTO) => {
     const { name, description } = body;
-    const newTodo = new Todo({ name, description });
-    await newTodo.save();
+    const newTodo = await todoRepo.addTodoRepo({ name, description });
 
     return { message: 'add todo successfully', data: newTodo };
 };
 
 export const updateTodoService = async (updatedTodoData: UpdateTodoDTO, id: string) => {
     const date = new Date();
+    const objectUpdate = { ...updatedTodoData, updatedAt: date };
 
-    const updatedTodo = await Todo.findByIdAndUpdate(id, { ...updatedTodoData, updatedAt: date }, { new: true });
+    const updatedTodo = await todoRepo.updateTodoRepo(id, objectUpdate);
 
     if (!updatedTodo) {
         throw new NotFoundError('Todo is not found');
@@ -52,11 +53,11 @@ export const updateTodoService = async (updatedTodoData: UpdateTodoDTO, id: stri
 };
 
 export const deleteTodoService = async (id: string) => {
-    const deletedTodo = await Todo.findByIdAndDelete(id);
+    const deletedTodo = await todoRepo.deleteTodoRepo(id);
 
     if (!deletedTodo) {
         throw new BadRequestError('Todo is not found');
     }
 
-    return { message: 'Todo deleted successfully', data: deletedTodo };
+    return { message: 'Todo deleted successfully' };
 };

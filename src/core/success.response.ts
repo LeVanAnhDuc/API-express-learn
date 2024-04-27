@@ -20,13 +20,13 @@ class SuccessResponse {
 }
 
 export class OKResponse extends SuccessResponse {
-    constructor({ message = '', status = statusCodes.OK, reasonStatusCode = reasonPhrases.OK, data }) {
+    constructor({ message = '', status = statusCodes.OK, reasonStatusCode = reasonPhrases.OK, data = {} }) {
         super({ message, status, reasonStatusCode, data });
     }
 }
 
 export class CreatedResponse extends SuccessResponse {
-    constructor({ message = '', status = statusCodes.CREATED, reasonStatusCode = reasonPhrases.CREATED, data }) {
+    constructor({ message = '', status = statusCodes.CREATED, reasonStatusCode = reasonPhrases.CREATED, data = {} }) {
         super({ message, status, reasonStatusCode, data });
     }
 }
