@@ -26,9 +26,10 @@ router.get(
 
 router.get('/:id', asyncMiddlewareHandler(isIDObject), asyncHandler(getTodoByIDController));
 
+router.use(asyncMiddlewareHandler(authorMiddleware));
+
 router.post(
     '/',
-    asyncMiddlewareHandler(authorMiddleware),
     asyncMiddlewareHandler(requiredBody),
     asyncMiddlewareHandler(validateFieldsRequestBody(CreateTodoDTO)),
     asyncHandler(addTodoController),
@@ -36,18 +37,12 @@ router.post(
 
 router.put(
     '/:id',
-    asyncMiddlewareHandler(authorMiddleware),
     asyncMiddlewareHandler(isIDObject),
     asyncMiddlewareHandler(requiredBody),
     asyncMiddlewareHandler(validateFieldsRequestBody(UpdateTodoDTO)),
     asyncHandler(updateTodoController),
 );
 
-router.delete(
-    '/:id',
-    asyncMiddlewareHandler(authorMiddleware),
-    asyncMiddlewareHandler(isIDObject),
-    asyncHandler(deleteTodoController),
-);
+router.delete('/:id', asyncMiddlewareHandler(isIDObject), asyncHandler(deleteTodoController));
 
 export default router;
