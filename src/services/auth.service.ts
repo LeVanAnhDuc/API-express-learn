@@ -1,18 +1,19 @@
 import { Request } from 'express';
-import Account from '../models/account.model';
 import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
 import { bcrypt, jwt } from '../libs';
-import redis from '../dbs/init.redis';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../core/error.response';
+import { authRepo } from '../repositories';
 
 export const registerAccountService = async (body: CreateAccountDTO) => {
     const { userName, email, passWord } = body;
 
     const hashPassWord = await bcrypt.hashPassword(passWord);
 
-    const newAccount = await new Account({ userName, email, passWord: hashPassWord });
-
-    await newAccount.save();
+    const newAccount = await authRepo.registerAccountRepo({
+        userName,
+        email,
+        passWord: hashPassWord,
+    });
 
     return { message: 'register successfully', data: newAccount };
 };
@@ -20,9 +21,7 @@ export const registerAccountService = async (body: CreateAccountDTO) => {
 export const loginAccountService = async (body: LoginAccountDTO) => {
     const { email, passWord } = body;
 
-    const infoUser = await Account.findOne({
-        email,
-    });
+    const infoUser = await authRepo.findUserRepo({ email });
 
     if (!infoUser) {
         throw new BadRequestError('Email or password is wrong');
@@ -38,15 +37,11 @@ export const loginAccountService = async (body: LoginAccountDTO) => {
         id: infoUser._id,
     });
 
-    const redisClient = redis.getRedis();
-    redisClient.hSet('accessToken', infoUser._id, accessToken);
-    redisClient.hSet('refreshToken', infoUser._id, refreshToken);
-
-    const expireTimeInSecondsAccToken = Math.floor(Math.random() * 3600) + 3600;
-    const expireTimeInSecondsRefToken = Math.floor(Math.random() * 3600) + 3600;
-
-    redisClient.expire('accessToken', expireTimeInSecondsAccToken);
-    redisClient.expire('refreshToken', expireTimeInSecondsRefToken);
+    await authRepo.saveTokenRepo({
+        infoUser,
+        accessToken,
+        refreshToken,
+    });
 
     return {
         message: 'login successfully',

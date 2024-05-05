@@ -98,6 +98,17 @@ class Cache {
 
         return item;
     };
+
+    public SetHsetWithCache = async (filter: Record<string, any>, object: Record<string, any>): Promise<any> => {
+        const key = this.key(filter);
+
+        let item = await this.hGetAll(key);
+        if (Object.keys(item).length === 0) {
+            item = Object.entries(object).map(async (value) => await this.hSet(key, value[0].toString(), value[1]));
+        }
+
+        return item;
+    };
 }
 
 class Repository extends Cache {
