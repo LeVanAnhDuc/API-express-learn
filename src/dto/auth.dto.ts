@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsMobilePhone } from 'class-validator';
 
 export class CreateAccountDTO {
     @Expose()
@@ -15,6 +15,13 @@ export class CreateAccountDTO {
     @IsEmail()
     @Transform(({ value }) => (value ? value.trim() : value))
     email: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @Type(() => String)
+    @IsMobilePhone('vi-VN')
+    @Transform(({ value }) => (value ? value.trim() : value))
+    phone: string;
 
     @Expose()
     @IsNotEmpty()

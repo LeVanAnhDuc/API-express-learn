@@ -1,15 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
-import { loginAccountService, registerAccountService, refreshTokenService } from '../services/auth.service';
+import AuthService from '../services/auth.service';
 import { CreatedResponse, OKResponse } from '../core/success.response';
 
-export const registerAccountController = async (req: Request, res: Response, next: NextFunction) => {
-    return new CreatedResponse(await registerAccountService(req.body)).send(res);
-};
+class AuthController {
+    registerAccount = async (req: Request, res: Response, next: NextFunction) => {
+        return new CreatedResponse(await AuthService.registerAccount(req.body)).send(res);
+    };
 
-export const loginAccountController = async (req: Request, res: Response, next: NextFunction) => {
-    return new OKResponse(await loginAccountService(req.body)).send(res);
-};
+    loginAccount = async (req: Request, res: Response, next: NextFunction) => {
+        return new OKResponse(await AuthService.loginAccount(req.body)).send(res);
+    };
 
-export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
-    return new CreatedResponse(await refreshTokenService(req)).send(res);
-};
+    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+        return new CreatedResponse(await AuthService.refreshToken(req)).send(res);
+    };
+}
+
+export default new AuthController();

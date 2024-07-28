@@ -1,12 +1,12 @@
-import Account from '../models/account.model';
+import User from '../models/user.model';
 import Repository from './base.repo';
 
 class AuthRepo extends Repository {
     constructor() {
-        super(Account, 'Account');
+        super(User, 'User');
     }
-    registerAccountRepo = async ({ userName, email, passWord }) => {
-        return await this.create({ userName, email, passWord });
+    registerAccountRepo = async ({ userName, email, phone, passWord }) => {
+        return await this.create({ userName, email, phone, passWord });
     };
 
     findUserRepo = async ({ email }) => {
