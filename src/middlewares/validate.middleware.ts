@@ -1,62 +1,83 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request } from 'express';
 import lodash from 'lodash';
 import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
 import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer';
 import { validate } from 'class-validator';
 import { BadRequestError } from '../core/error.response';
 
-export const validateFieldsRequestBody =
-    <T extends object>(type: ClassConstructor<T>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
-        const dtoInstance = plainToClass(type, req.body, { excludeExtraneousValues: true });
+const validateFields = async <T extends object>(req: Request, type: ClassConstructor<T>, source: 'body' | 'query') => {
+    const dtoInstance = plainToClass(type, req[source], { excludeExtraneousValues: true });
+
+    const errorsValidate = await validate(dtoInstance);
+
+    if (errorsValidate.length > 0) {
+        const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
+
+        throw new BadRequestError(errorMessage.trim());
+    }
+
+    if (source === 'body') {
         req.body = classToPlain(dtoInstance);
+    }
+};
 
-        const errorsValidate = await validate(dtoInstance);
-
-        let messageError: string = '';
-
-        errorsValidate.forEach((error) => {
-            Object.values(error.constraints).forEach((constraint) => {
-                messageError += `${constraint}, `;
-            });
-        });
-
-        if (messageError) {
-            throw new BadRequestError(messageError);
-        }
+export const validateFieldsRequestBody = <T extends object>(type: ClassConstructor<T>) => {
+    return async (req: Request) => {
+        await validateFields(req, type, 'body');
     };
+};
 
-export const validateFieldsRequestQuery =
-    <T extends object>(type: ClassConstructor<T>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
-        const dtoInstance = plainToClass(type, req.query, { excludeExtraneousValues: true });
-
-        const errorsValidate = await validate(dtoInstance);
-
-        let messageError: string = '';
-
-        errorsValidate.forEach((error) => {
-            Object.values(error.constraints).forEach((constraint) => {
-                messageError += `${constraint}, `;
-            });
-        });
-
-        if (messageError) {
-            throw new BadRequestError(messageError);
-        }
+export const validateFieldsRequestQuery = <T extends object>(type: ClassConstructor<T>) => {
+    return async (req: Request) => {
+        await validateFields(req, type, 'query');
     };
+};
 
-export const checkUniqueValues =
-    <T extends Document>(fields: string[], model: Model<T>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+// export const validateFieldsRequestBody = <T extends object>(type: ClassConstructor<T>) => {
+//     return async (req: Request) => {
+//         // excludeExtraneousValues: loại trừ các giá trị không liên quan
+//         const dtoInstance = plainToClass(type, req.body, { excludeExtraneousValues: true });
+
+//         const errorsValidate = await validate(dtoInstance);
+
+//         if (errorsValidate.length > 0) {
+//             const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
+
+//             throw new BadRequestError(errorMessage.trim());
+//         }
+
+//         req.body = classToPlain(dtoInstance);
+//     };
+// };
+
+// export const validateFieldsRequestQuery = <T extends object>(type: ClassConstructor<T>) => {
+//     return async (req: Request) => {
+//         const dtoInstance = plainToClass(type, req.query, { excludeExtraneousValues: true });
+
+//         const errorsValidate = await validate(dtoInstance);
+
+//         if (errorsValidate.length > 0) {
+//             const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
+
+//             throw new BadRequestError(errorMessage.trim());
+//         }
+//     };
+// };
+
+export const checkUniqueValues = <T extends Document, K extends keyof Omit<T, keyof Document>>(
+    fields: K[],
+    model: Model<T>,
+) => {
+    return async (req: Request) => {
         const errors = [];
 
         for (const field of fields) {
             const query: FilterQuery<T> = { [field]: req.body[field] } as FilterQuery<T>;
+
             const fieldExist = await model.exists(query);
 
             if (fieldExist) {
-                errors.push(`${field} is exist`);
+                errors.push(`${field as string} is exist`);
             }
         }
 
@@ -64,8 +85,9 @@ export const checkUniqueValues =
             throw new BadRequestError(errors.join(', '));
         }
     };
+};
 
-export const requiredBody = (req: Request, res: Response, next: NextFunction) => {
+export const requiredBody = (req: Request) => {
     if (lodash.isEmpty(req.body)) {
         throw new BadRequestError('data not empty');
     }
@@ -73,7 +95,7 @@ export const requiredBody = (req: Request, res: Response, next: NextFunction) =>
     return Promise.resolve();
 };
 
-export const isIDObject = (req: Request, res: Response, next: NextFunction) => {
+export const isIDObject = (req: Request) => {
     const { id } = req.params;
 
     if (id && !isValidObjectId(id)) {

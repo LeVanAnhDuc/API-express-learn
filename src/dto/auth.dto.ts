@@ -1,46 +1,43 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsEmail, IsMobilePhone } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsMobilePhone, MinLength, MaxLength } from 'class-validator';
 
 export class CreateAccountDTO {
+    // require field expose
     @Expose()
+    @Transform(({ value }) => value?.trim())
+    // convert to type
+    // @Type(() => String)
     @IsNotEmpty()
-    @Type(() => String)
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
     userName: string;
 
     @Expose()
+    @Transform(({ value }) => value?.trim())
     @IsNotEmpty()
-    @Type(() => String)
     @IsEmail()
-    @Transform(({ value }) => (value ? value.trim() : value))
     email: string;
 
     @Expose()
+    @Transform(({ value }) => value?.trim())
     @IsNotEmpty()
-    @Type(() => String)
     @IsMobilePhone('vi-VN')
-    @Transform(({ value }) => (value ? value.trim() : value))
     phone: string;
 
     @Expose()
+    @Transform(({ value }) => value?.trim())
     @IsNotEmpty()
-    @Type(() => String)
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
     passWord: string;
 }
 
 export class LoginAccountDTO {
     @Expose()
     @IsNotEmpty()
-    @Type(() => String)
     @IsEmail()
     email: string;
 
     @Expose()
     @IsNotEmpty()
-    @Type(() => String)
     @IsString()
     passWord: string;
 }
