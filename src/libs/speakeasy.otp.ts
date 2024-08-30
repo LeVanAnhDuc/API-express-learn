@@ -3,7 +3,7 @@ import config from '../config';
 
 const secret = speakeasy.generateSecret({ length: 20, name: config.DB_NAME });
 
-export const getToken = () =>
+export const getOTP = () =>
     speakeasy.totp({
         secret: secret.base32,
         encoding: 'base32',

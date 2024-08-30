@@ -26,6 +26,16 @@ class AuthRepo extends Repository {
         );
     };
 
+    updateOTP = async ({ email, otpCode, otpExpire }) => {
+        return await this.updateMany(
+            { email },
+            {
+                otpCode,
+                otpExpire,
+            },
+        );
+    };
+
     saveTokenRepo = async ({ infoUser, accessToken, refreshToken }) => {
         this.SetHsetWithCache(
             {

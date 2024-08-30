@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { CreateAccountDTO, LoginAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
-import { bcrypt, jwt, sendEmail, token } from '../libs';
+import { CreateAccountDTO, LoginAccountDTO, ReSendOTPAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
+import { bcrypt, jwt, sendEmail, speakeasy } from '../libs';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../core/error.response';
 import { authRepo } from '../repositories';
 import { formatSI } from '../utils/common';
@@ -11,7 +11,7 @@ class AuthService {
         const { userName, email, phone, passWord } = body;
 
         const hashPassWord = await bcrypt.hashPassword(passWord);
-        const otp = await token.getToken();
+        const otp = await speakeasy.getOTP();
 
         const newAccount = await authRepo.registerAccountRepo({
             userName,
@@ -39,7 +39,7 @@ class AuthService {
             throw new NotFoundError('Email not found');
         }
 
-        const otp = await token.verifiedOTP(otpCode);
+        const otp = await speakeasy.verifiedOTP(otpCode);
 
         if (!otp) {
             throw new NotFoundError('OTP not match');
@@ -50,6 +50,37 @@ class AuthService {
         });
 
         return { message: 'verify successfully', data: verifyAccount };
+    };
+
+    static reSendOTPRegister = async (body: ReSendOTPAccountDTO) => {
+        const { email } = body;
+        const infoUser = await authRepo.findUserRepo({ email });
+
+        if (!infoUser) {
+            throw new NotFoundError('Email not found');
+        }
+
+        if (infoUser.verifiedEmail) {
+            throw new BadRequestError('Account already verified');
+        }
+
+        const otp = await speakeasy.getOTP();
+
+        await authRepo.updateOTP({
+            email,
+            otpCode: otp,
+            otpExpire: new Date(Date.now() + 120 * 1000),
+        });
+
+        const { userName } = infoUser;
+
+        await sendEmail({
+            email,
+            subject: subjectEmail,
+            message: formatSI(templateEmail, { userName, otp }),
+        });
+
+        return { message: 'resend otp successfully' };
     };
 
     static loginAccount = async (body: LoginAccountDTO) => {

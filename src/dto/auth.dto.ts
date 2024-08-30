@@ -42,6 +42,13 @@ export class VerifyAccountDTO {
     otpCode: string;
 }
 
+export class ReSendOTPAccountDTO {
+    @Expose()
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+}
+
 export class LoginAccountDTO {
     @Expose()
     @IsNotEmpty()
