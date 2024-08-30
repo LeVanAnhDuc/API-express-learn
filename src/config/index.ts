@@ -16,5 +16,7 @@ const config = {
 
     JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    USERNAME_EMAIL: process.env.USERNAME_EMAIL,
+    PASSWORD_EMAIL: process.env.PASSWORD_EMAIL,
 };
 export default config;

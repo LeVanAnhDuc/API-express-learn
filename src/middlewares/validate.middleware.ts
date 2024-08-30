@@ -33,37 +33,6 @@ export const validateFieldsRequestQuery = <T extends object>(type: ClassConstruc
     };
 };
 
-// export const validateFieldsRequestBody = <T extends object>(type: ClassConstructor<T>) => {
-//     return async (req: Request) => {
-//         // excludeExtraneousValues: loại trừ các giá trị không liên quan
-//         const dtoInstance = plainToClass(type, req.body, { excludeExtraneousValues: true });
-
-//         const errorsValidate = await validate(dtoInstance);
-
-//         if (errorsValidate.length > 0) {
-//             const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
-
-//             throw new BadRequestError(errorMessage.trim());
-//         }
-
-//         req.body = classToPlain(dtoInstance);
-//     };
-// };
-
-// export const validateFieldsRequestQuery = <T extends object>(type: ClassConstructor<T>) => {
-//     return async (req: Request) => {
-//         const dtoInstance = plainToClass(type, req.query, { excludeExtraneousValues: true });
-
-//         const errorsValidate = await validate(dtoInstance);
-
-//         if (errorsValidate.length > 0) {
-//             const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
-
-//             throw new BadRequestError(errorMessage.trim());
-//         }
-//     };
-// };
-
 export const checkUniqueValues = <T extends Document, K extends keyof Omit<T, keyof Document>>(
     fields: K[],
     model: Model<T>,

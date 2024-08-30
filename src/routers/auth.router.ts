@@ -2,7 +2,7 @@ import express from 'express';
 import AuthController from '../controllers/auth.controller';
 import { checkUniqueValues, validateFieldsRequestBody } from '../middlewares/validate.middleware';
 import User from '../models/user.model';
-import { CreateAccountDTO, LoginAccountDTO } from '../dto/auth.dto';
+import { CreateAccountDTO, LoginAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
 import { asyncHandler, asyncMiddlewareHandler } from '../helper';
 
 const router = express.Router();
@@ -12,6 +12,12 @@ router.post(
     asyncMiddlewareHandler(validateFieldsRequestBody(CreateAccountDTO)),
     asyncMiddlewareHandler(checkUniqueValues(['userName', 'email', 'phone'], User)),
     asyncHandler(AuthController.registerAccount),
+);
+
+router.post(
+    '/verify-signup',
+    asyncMiddlewareHandler(validateFieldsRequestBody(VerifyAccountDTO)),
+    asyncHandler(AuthController.verifyRegisterAccount),
 );
 
 router.post(

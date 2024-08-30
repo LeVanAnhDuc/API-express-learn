@@ -5,8 +5,8 @@ class AuthRepo extends Repository {
     constructor() {
         super(User, 'User');
     }
-    registerAccountRepo = async ({ userName, email, phone, passWord }) => {
-        return await this.create({ userName, email, phone, passWord });
+    registerAccountRepo = async ({ userName, email, phone, passWord, otpCode, otpExpire }) => {
+        return await this.create({ userName, email, phone, passWord, otpCode, otpExpire });
     };
 
     findUserRepo = async ({ email }) => {
@@ -14,6 +14,18 @@ class AuthRepo extends Repository {
             email,
         });
     };
+
+    verifySignup = async ({ email }) => {
+        return await this.updateMany(
+            { email },
+            {
+                verifiedEmail: true,
+                otpCode: null,
+                otpExpire: null,
+            },
+        );
+    };
+
     saveTokenRepo = async ({ infoUser, accessToken, refreshToken }) => {
         this.SetHsetWithCache(
             {

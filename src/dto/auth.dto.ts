@@ -30,6 +30,18 @@ export class CreateAccountDTO {
     passWord: string;
 }
 
+export class VerifyAccountDTO {
+    @Expose()
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
+    otpCode: string;
+}
+
 export class LoginAccountDTO {
     @Expose()
     @IsNotEmpty()

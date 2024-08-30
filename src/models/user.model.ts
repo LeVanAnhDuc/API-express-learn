@@ -22,6 +22,9 @@ interface IUser extends Document {
     role: TRole;
     createdAt: Date;
     updatedAt: Date;
+    verifiedEmail: boolean;
+    otpCode: string;
+    otpExpire: Date;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -57,6 +60,9 @@ const UserSchema = new Schema<IUser>(
         role: { type: String, enum: Object.values(ERole), default: ERole.USER },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
+        verifiedEmail: { type: Boolean, default: false },
+        otpCode: { type: String, default: null },
+        otpExpire: { type: Date, default: Date.now },
     },
     {
         collection: 'users',

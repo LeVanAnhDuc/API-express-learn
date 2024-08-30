@@ -7,6 +7,10 @@ class AuthController {
         return new CreatedResponse(await AuthService.registerAccount(req.body)).send(res);
     };
 
+    verifyRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
+        return new CreatedResponse(await AuthService.verifyRegisterAccount(req.body)).send(res);
+    };
+
     loginAccount = async (req: Request, res: Response, next: NextFunction) => {
         return new OKResponse(await AuthService.loginAccount(req.body)).send(res);
     };
