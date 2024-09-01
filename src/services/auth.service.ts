@@ -5,6 +5,7 @@ import { BadRequestError, NotFoundError, UnauthorizedError } from '../core/error
 import { authRepo } from '../repositories';
 import { formatSI } from '../utils/common';
 import { subjectEmail, templateEmail } from '../constants/email';
+import { IUser } from '../models/user.model';
 
 class AuthService {
     static registerAccount = async (body: CreateAccountDTO) => {
@@ -33,16 +34,22 @@ class AuthService {
 
     static verifyRegisterAccount = async (body: VerifyAccountDTO) => {
         const { email, otpCode } = body;
-        const checkEmail = await authRepo.findUserRepo({ email });
+        const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!checkEmail) {
-            throw new NotFoundError('Email not found');
+        if (!infoUser.email) {
+            throw new BadRequestError('Email not found');
+        }
+
+        const { otpExpire } = infoUser;
+
+        if (new Date().getTime() > otpExpire.getTime()) {
+            throw new BadRequestError('OTP expired. Please resend OTP');
         }
 
         const otp = await speakeasy.verifiedOTP(otpCode);
 
         if (!otp) {
-            throw new NotFoundError('OTP not match');
+            throw new BadRequestError('OTP not match');
         }
 
         const verifyAccount = await authRepo.verifySignup({
@@ -54,10 +61,10 @@ class AuthService {
 
     static reSendOTPRegister = async (body: ReSendOTPAccountDTO) => {
         const { email } = body;
-        const infoUser = await authRepo.findUserRepo({ email });
+        const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!infoUser) {
-            throw new NotFoundError('Email not found');
+        if (!infoUser.email) {
+            throw new BadRequestError('Email not found');
         }
 
         if (infoUser.verifiedEmail) {
@@ -86,16 +93,16 @@ class AuthService {
     static loginAccount = async (body: LoginAccountDTO) => {
         const { email, passWord } = body;
 
-        const infoUser = await authRepo.findUserRepo({ email });
+        const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!infoUser) {
-            throw new BadRequestError('Email or password is wrong');
+        if (!infoUser.email) {
+            throw new BadRequestError('Email is wrong');
         }
 
         const passwordMatch = await bcrypt.isValidPassword(passWord, infoUser.passWord);
 
         if (!passwordMatch) {
-            throw new BadRequestError('Email or password is wrong');
+            throw new BadRequestError('Password is wrong');
         }
 
         const { accessToken, refreshToken } = jwt.generatePairToken({
@@ -121,7 +128,7 @@ class AuthService {
         };
     };
 
-    static refreshToken = async (req: Request) => {
+    static refreshAccessToken = async (req: Request) => {
         if (!req.headers?.authorization) {
             throw new NotFoundError('token is not found');
         }

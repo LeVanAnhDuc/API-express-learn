@@ -8,7 +8,7 @@ import { EGender, ERole } from '../constants';
 
 const { Schema } = mongoose;
 
-interface IUser extends Document {
+export interface IUser extends Document {
     userName: string;
     fullName: string;
     email: string;
@@ -66,6 +66,7 @@ const UserSchema = new Schema<IUser>(
     },
     {
         collection: 'users',
+        timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
     },
 );
 

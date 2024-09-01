@@ -19,8 +19,8 @@ class AuthController {
         return new OKResponse(await AuthService.loginAccount(req.body)).send(res);
     };
 
-    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
-        return new CreatedResponse(await AuthService.refreshToken(req)).send(res);
+    refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+        return new CreatedResponse(await AuthService.refreshAccessToken(req)).send(res);
     };
 }
 
