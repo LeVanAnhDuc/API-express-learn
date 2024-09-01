@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { CreateAccountDTO, LoginAccountDTO, ReSendOTPAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
 import { bcrypt, jwt, sendEmail, speakeasy } from '../libs';
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../core/error.response';
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
 import { authRepo } from '../repositories';
 import { formatSI } from '../utils/common';
 import { subjectEmail, templateEmail } from '../constants/email';
@@ -95,8 +95,14 @@ class AuthService {
 
         const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!infoUser.email) {
-            throw new BadRequestError('Email is wrong');
+        const { email: emailDB, verifiedEmail } = infoUser;
+
+        if (!emailDB) {
+            throw new BadRequestError('User is not found');
+        }
+
+        if (!verifiedEmail) {
+            throw new ForbiddenError('Account is not verify');
         }
 
         const passwordMatch = await bcrypt.isValidPassword(passWord, infoUser.passWord);

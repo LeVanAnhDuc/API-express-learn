@@ -30,3 +30,14 @@ export class CreatedResponse extends SuccessResponse {
         super({ message, status, reasonStatusCode, data });
     }
 }
+
+export class NoContentResponse extends SuccessResponse {
+    constructor({
+        message = '',
+        status = statusCodes.NO_CONTENT,
+        reasonStatusCode = reasonPhrases.NO_CONTENT,
+        data = undefined,
+    }) {
+        super({ message, status, reasonStatusCode, data });
+    }
+}
