@@ -36,34 +36,35 @@ class AuthService {
         const { email, otpCode } = body;
         const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!infoUser.email) {
+        if (!infoUser) {
             throw new BadRequestError('Email not found');
         }
 
         const { otpExpire } = infoUser;
+        if (!otpExpire) {
+            throw new BadRequestError('Account already verified');
+        }
 
         if (new Date().getTime() > otpExpire.getTime()) {
             throw new BadRequestError('OTP expired. Please resend OTP');
         }
 
-        const otp = await speakeasy.verifiedOTP(otpCode);
+        const verifiedOTP = await speakeasy.verifiedOTP(otpCode);
 
-        if (!otp) {
+        if (!verifiedOTP) {
             throw new BadRequestError('OTP not match');
         }
 
-        const verifyAccount = await authRepo.verifySignup({
-            email,
-        });
+        await authRepo.verifySignup({ email });
 
-        return { message: 'verify successfully', data: verifyAccount };
+        return { message: 'verify successfully', data: undefined };
     };
 
     static reSendOTPRegister = async (body: ReSendOTPAccountDTO) => {
         const { email } = body;
         const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        if (!infoUser.email) {
+        if (!infoUser) {
             throw new BadRequestError('Email not found');
         }
 
@@ -95,20 +96,20 @@ class AuthService {
 
         const infoUser: IUser = await authRepo.findUserRepo({ email });
 
-        const { email: emailDB, verifiedEmail } = infoUser;
-
-        if (!emailDB) {
+        if (!infoUser) {
             throw new BadRequestError('User is not found');
-        }
-
-        if (!verifiedEmail) {
-            throw new ForbiddenError('Account is not verify');
         }
 
         const passwordMatch = await bcrypt.isValidPassword(passWord, infoUser.passWord);
 
         if (!passwordMatch) {
             throw new BadRequestError('Password is wrong');
+        }
+
+        const { verifiedEmail } = infoUser;
+
+        if (!verifiedEmail) {
+            throw new ForbiddenError('Account is not verify');
         }
 
         const { accessToken, refreshToken } = jwt.generatePairToken({

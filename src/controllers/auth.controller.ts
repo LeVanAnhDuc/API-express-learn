@@ -8,11 +8,11 @@ class AuthController {
     };
 
     verifyRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
-        return new CreatedResponse(await AuthService.verifyRegisterAccount(req.body)).send(res);
+        return new OKResponse(await AuthService.verifyRegisterAccount(req.body)).send(res);
     };
 
     reSendOTPRegister = async (req: Request, res: Response, next: NextFunction) => {
-        return new CreatedResponse(await AuthService.reSendOTPRegister(req.body)).send(res);
+        return new OKResponse(await AuthService.reSendOTPRegister(req.body)).send(res);
     };
 
     loginAccount = async (req: Request, res: Response, next: NextFunction) => {
