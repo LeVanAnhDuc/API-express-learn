@@ -1,39 +1,64 @@
-import { Expose, Transform, Type } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional, IsBoolean, IsInt, Max, Min } from 'class-validator';
 
 export class GetTodosQueryParamsDTO {
     @Expose()
-    @Type(() => Number)
     @IsInt()
     @Min(1)
-    @Transform(({ value }) => value || 1)
+    @Transform(({ value }) => parseInt(value) || 1)
     pageNo: number = 1;
 
     @Expose()
-    @Type(() => Number)
     @IsInt()
     @Max(120)
-    @Transform(({ value }) => value || 10)
+    @Transform(({ value }) => parseInt(value) || 10)
     pageSize: number = 10;
 
     @Expose()
     @IsOptional()
     @IsBoolean()
-    @Transform(({ value }) => (typeof value === 'boolean' ? value : false))
-    isStatus: boolean = true;
+    @Transform(({ value }) => {
+        if (!value) return true;
+
+        if (typeof value === 'string') {
+            if (value === 'true') return true;
+            if (value === 'false') return false;
+        }
+
+        return Boolean(value);
+    })
+    isActive: boolean;
+
+    @Expose()
+    @IsString()
+    @IsOptional()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    searchKey: string;
+
+    @Expose()
+    @IsString()
+    @IsOptional()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    status: string;
+
+    @Expose()
+    @IsString()
+    @IsOptional()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    projectName: string;
 }
 
 export class CreateTodoDTO {
     @Expose()
     @IsNotEmpty()
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
+    @Transform(({ value }) => value.trim())
     name: string;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
+    @Transform(({ value }) => value.trim())
     description: string;
 }
 
@@ -41,12 +66,12 @@ export class UpdateTodoDTO {
     @Expose()
     @IsOptional()
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
+    @Transform(({ value }) => value.trim())
     name: string;
 
     @Expose()
     @IsOptional()
     @IsString()
-    @Transform(({ value }) => (value ? value.trim() : value))
+    @Transform(({ value }) => value.trim())
     description: string;
 }
