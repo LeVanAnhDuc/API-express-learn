@@ -18,7 +18,9 @@ class TodoController {
     };
 
     addTodoController = async (req: Request, res: Response, next: NextFunction) => {
-        return new CreatedResponse(await TodoService.addTodoService(req.body)).send(res);
+        const accessToken = req.headers.authorization.split(' ')[1];
+
+        return new CreatedResponse(await TodoService.addTodoService(accessToken, req.body)).send(res);
     };
 
     updateTodoController = async (req: Request, res: Response, next: NextFunction) => {

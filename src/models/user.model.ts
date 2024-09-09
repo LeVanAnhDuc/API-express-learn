@@ -5,6 +5,7 @@ import validator from 'validator';
 import { TGender, TRole } from '../types';
 // others
 import { EGender, ERole } from '../constants';
+import { IUserSpecifically } from '../interface/user';
 
 const { Schema } = mongoose;
 
@@ -26,6 +27,20 @@ export interface IUser extends Document {
     otpCode: string;
     otpExpire: Date;
 }
+
+export const IUserSpecificallySchema = new Schema<IUserSpecifically>(
+    {
+        userName: { type: String, trim: true },
+        fullName: { type: String, default: null },
+        email: { type: String, trim: true },
+        phone: { type: String, trim: true },
+        isActive: { type: Boolean, default: true },
+        avatar: { type: String, default: null },
+    },
+    {
+        _id: false,
+    },
+);
 
 const UserSchema = new Schema<IUser>(
     {

@@ -52,26 +52,44 @@ export class CreateTodoDTO {
     @Expose()
     @IsNotEmpty()
     @IsString()
-    @Transform(({ value }) => value.trim())
+    @Transform(({ value }) => (value ? value.trim() : value))
     name: string;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
-    @Transform(({ value }) => value.trim())
+    @Transform(({ value }) => (value ? value.trim() : value))
     description: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    summary: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    projectName: string;
+
+    @Expose()
+    @IsString()
+    @IsNotEmpty()
+    @Transform(({ value }) => (value ? value.trim() : value))
+    status: string;
 }
 
 export class UpdateTodoDTO {
     @Expose()
-    @IsOptional()
     @IsString()
+    @IsOptional()
     @Transform(({ value }) => value.trim())
     name: string;
 
     @Expose()
-    @IsOptional()
     @IsString()
+    @IsOptional()
     @Transform(({ value }) => value.trim())
     description: string;
 }

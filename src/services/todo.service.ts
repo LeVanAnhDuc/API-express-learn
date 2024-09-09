@@ -1,6 +1,8 @@
 import { CreateTodoDTO, GetTodosQueryParamsDTO, UpdateTodoDTO } from '../dto/todo.dto';
 import { BadRequestError, NotFoundError } from '../core/error.response';
-import { todoRepo } from '../repositories';
+import { authRepo, todoRepo } from '../repositories';
+import { jwt } from '../libs';
+import { IUser } from '../models/user.model';
 
 class TodoService {
     static getTodosService = async (query: GetTodosQueryParamsDTO) => {
@@ -56,9 +58,28 @@ class TodoService {
         return { message: 'Get one todo successfully', data: data };
     };
 
-    static addTodoService = async (body: CreateTodoDTO) => {
-        const { name, description } = body;
-        const newTodo = await todoRepo.addTodoRepo({ name, description });
+    static addTodoService = async (accessToken: string, body: CreateTodoDTO) => {
+        const { name, description, projectName, status, summary } = body;
+
+        const idUser = jwt.decodeAccessToken(accessToken);
+
+        const userCreate: IUser = await authRepo.findIDUserRepo(idUser.id);
+
+        const newTodo = await todoRepo.addTodoRepo({
+            name,
+            description,
+            projectName,
+            status,
+            summary,
+            createBy: {
+                userName: userCreate.userName,
+                fullName: userCreate.fullName,
+                email: userCreate.email,
+                phone: userCreate.phone,
+                isActive: userCreate.isActive,
+                avatar: userCreate.avatar,
+            },
+        });
 
         return { message: 'add todo successfully', data: newTodo };
     };

@@ -15,6 +15,10 @@ class AuthRepo extends Repository {
         });
     };
 
+    findIDUserRepo = async (id: string) => {
+        return await this.findById(id);
+    };
+
     verifySignup = async ({ email }) => {
         return await this.updateMany(
             { email },
