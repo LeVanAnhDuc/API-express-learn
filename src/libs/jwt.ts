@@ -4,7 +4,7 @@ import config from '../config';
 export const generatePairToken = (payload) => {
     const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
         algorithm: 'HS256',
-        expiresIn: '15m',
+        expiresIn: '8h',
     });
     const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
         algorithm: 'HS256',
@@ -19,7 +19,7 @@ export const generatePairToken = (payload) => {
 export const generateAccessToken = (payload) => {
     const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
         algorithm: 'HS256',
-        expiresIn: '15m',
+        expiresIn: '8h',
     });
 
     return accessToken;

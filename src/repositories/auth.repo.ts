@@ -51,8 +51,6 @@ class AuthRepo extends Repository {
             },
         );
     };
-
-    refreshTokenRepo = async () => {};
 }
 
 export default AuthRepo;
