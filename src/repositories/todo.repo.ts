@@ -6,12 +6,17 @@ class TodoRepo extends Repository {
         super(Todo, 'Todo');
     }
 
-    public getTodosRepo = async (
-        filter: Record<string, any> = {},
-        skip: number = 0,
-        limit: number = 0,
-        saveCache: boolean = false,
-    ) => {
+    public getTodosRepo = async ({
+        filter = {},
+        skip = 0,
+        limit = 0,
+        saveCache = false,
+    }: {
+        filter?: Record<string, any>;
+        skip?: number;
+        limit?: number;
+        saveCache?: boolean;
+    }) => {
         return await this.find(filter, skip, limit, saveCache);
     };
 

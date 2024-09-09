@@ -6,11 +6,11 @@ import { IUser } from '../models/user.model';
 
 class TodoService {
     static getTodosService = async (query: GetTodosQueryParamsDTO) => {
-        const { pageSize, pageNo, status, projectName, searchKey, isActive } = query;
+        const { pageSize, pageNo, status, projectName, searchKey, isActive = true } = query;
 
         const skipTodo = (pageNo - 1) * pageSize;
 
-        const filter: Record<string, any> = {};
+        const filter: Record<string, any> = { isActive };
 
         if (projectName) {
             filter.projectName = projectName;
@@ -18,10 +18,6 @@ class TodoService {
 
         if (status) {
             filter.status = status;
-        }
-
-        if (isActive) {
-            filter.isActive = isActive;
         }
 
         if (searchKey) {
@@ -33,7 +29,6 @@ class TodoService {
                 filter,
                 skip: skipTodo,
                 limit: pageSize,
-                saveCache: false,
             }),
             todoRepo.getCountTodosRepo(),
         ]);
