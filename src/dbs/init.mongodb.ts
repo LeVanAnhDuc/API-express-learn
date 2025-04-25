@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import config from '../config';
 import { MongoErrorResponse } from '../core/error.response';
 
-const statusConnecMongo = {
+const statusConnectMongo = {
     OPEN: 'open',
     CONNECT: 'connected',
     DISCONNECT: 'disconnected',
@@ -47,27 +47,27 @@ class MongoDatabase {
     };
 
     private handleEventConnect = () => {
-        mongoose.connection.on(statusConnecMongo.CONNECT, () => {
+        mongoose.connection.on(statusConnectMongo.CONNECT, () => {
             console.log('connected mongo: connected');
             clearTimeout(this.connectionTimeout);
         });
-        mongoose.connection.on(statusConnecMongo.OPEN, () => {
+        mongoose.connection.on(statusConnectMongo.OPEN, () => {
             console.log('connected mongo: open');
             clearTimeout(this.connectionTimeout);
         });
-        mongoose.connection.on(statusConnecMongo.DISCONNECT, () => {
+        mongoose.connection.on(statusConnectMongo.DISCONNECT, () => {
             console.log('connected mongo: disconnect');
             this.handleTimeoutError();
         });
-        mongoose.connection.on(statusConnecMongo.RECONNECT, () => {
+        mongoose.connection.on(statusConnectMongo.RECONNECT, () => {
             console.log('connected mongo: reconnecting');
             clearTimeout(this.connectionTimeout);
         });
-        mongoose.connection.on(statusConnecMongo.ERROR, (error) => {
+        mongoose.connection.on(statusConnectMongo.ERROR, (error) => {
             console.log(`connected mongo: ${error}`);
             this.handleTimeoutError();
         });
-        mongoose.connection.on(statusConnecMongo.CLOSE, () => {
+        mongoose.connection.on(statusConnectMongo.CLOSE, () => {
             console.log('connected mongo: close');
             clearTimeout(this.connectionTimeout);
         });
