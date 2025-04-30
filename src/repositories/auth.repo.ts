@@ -36,10 +36,6 @@ class AuthRepo extends Repository {
     );
   };
 
-  findIDUserRepo = async (id: string) => {
-    return await this.findById(id);
-  };
-
   updateOTP = async ({ email, otpCode, otpExpireAt }) => {
     return await this.updateMany(
       { email },
@@ -48,6 +44,10 @@ class AuthRepo extends Repository {
         otpExpireAt,
       },
     );
+  };
+
+  findIDUserRepo = async (id: string) => {
+    return await this.findById(id);
   };
 
   saveTokenRepo = async ({ infoUser, accessToken, refreshToken }) => {

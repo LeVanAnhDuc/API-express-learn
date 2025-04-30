@@ -81,36 +81,31 @@ class AuthService {
     return { message: 'Verify successfully' };
   };
 
-  // static reSendOTPRegister = async (body: ReSendOTPAccountDTO) => {
-  //   const { email } = body;
-  //   const infoUser: IUser = await authRepo.findUserRepo({ email });
+  static reSendOTPSignup = async ({ email }) => {
+    const infoUser: IUserDocument = await authRepo.findUserRepo(email);
 
-  //   if (!infoUser) {
-  //     throw new BadRequestError('Email not found');
-  //   }
+    if (!infoUser) throw new BadRequestError('Email not found');
 
-  //   if (infoUser.verifiedEmail) {
-  //     throw new BadRequestError('Account already verified');
-  //   }
+    const { fullName, verifiedEmail } = infoUser;
 
-  //   const otp = await speakeasy.getOTP();
+    if (verifiedEmail) throw new BadRequestError('Account already verified');
 
-  //   await authRepo.updateOTP({
-  //     email,
-  //     otpCode: otp,
-  //     otpExpireAt: new Date(Date.now() + 120 * 1000),
-  //   });
+    const { otp: otpCode, timeExpire } = speakeasy.getOTP();
 
-  //   const { userName } = infoUser;
+    await authRepo.updateOTP({
+      email,
+      otpCode,
+      otpExpireAt: new Date(Date.now() + timeExpire * 1000),
+    });
 
-  //   await sendEmail({
-  //     email,
-  //     subject: subjectEmail,
-  //     message: formatSI(templateEmail, { userName, otp }),
-  //   });
+    await sendEmail({
+      email,
+      subject: SUBJECT_EMAIL,
+      message: formatSI(TEMPLATE_EMAIL, { fullName, otpCode }),
+    });
 
-  //   return { message: 'resend otp successfully' };
-  // };
+    return { message: 'Re-send OTP successfully' };
+  };
 
   // static refreshAccessToken = async (req: Request) => {
   //   if (!req.headers?.authorization) {

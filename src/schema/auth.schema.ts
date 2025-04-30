@@ -44,4 +44,11 @@ const signupVerifySchema = joi.object({
   }),
 });
 
-export { loginSchema, signupSchema, signupVerifySchema };
+const reSendOtpSchema = joi.object({
+  email: emailSchema.required().messages({
+    'string.empty': MESSAGE_EMPTY,
+    'string.email': MESSAGE_EMAIL_INVALID,
+  }),
+});
+
+export { loginSchema, signupSchema, signupVerifySchema, reSendOtpSchema };

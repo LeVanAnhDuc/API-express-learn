@@ -18,11 +18,11 @@ class AuthController {
     return new OKResponse(await AuthService.verifySignup(req.body)).send(res);
   };
 
-  //   reSendOTPRegister = async (req: Request, res: Response, next: NextFunction) => {
-  //     return new OKResponse(await AuthService.reSendOTPRegister(req.body)).send(res);
-  //   };
+  reSendOTPSignup = async (req: Request, res: Response) => {
+    return new OKResponse(await AuthService.reSendOTPSignup(req.body)).send(res);
+  };
 
-  //   refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+  //   refreshAccessToken = async (req: Request, res: Response) => {
   //     return new CreatedResponse(await AuthService.refreshAccessToken(req)).send(res);
   //   };
 }
