@@ -1,26 +1,26 @@
+// libs
 import mongoose from 'mongoose';
+// others
 import config from '../config';
 import { MongoErrorResponse } from '../core/error.response';
 
-const statusConnectMongo = {
-    OPEN: 'open',
-    CONNECT: 'connected',
-    DISCONNECT: 'disconnected',
-    RECONNECT: 'reconnected',
-    ERROR: 'error',
-    CLOSE: 'close',
-};
+enum statusConnectMongo {
+    OPEN = 'open',
+    CONNECT = 'connected',
+    DISCONNECT = 'disconnected',
+    RECONNECT = 'reconnected',
+    ERROR = 'error',
+    CLOSE = 'close',
+}
 
 const MONGO_CONNECT_TIMEOUT = 10000;
 const MONGO_CONNECT_MESSAGE = {
     code: -99,
     message: {
-        vn: 'mongo bị lỗi',
         en: 'service connect mongo error',
     },
 };
 
-// Singleton pattern
 class MongoDatabase {
     private static instance: MongoDatabase | null = null;
     private connectionTimeout;
@@ -31,9 +31,8 @@ class MongoDatabase {
     }
 
     public static getInstance(): MongoDatabase {
-        if (this.instance === null) {
-            this.instance = new MongoDatabase();
-        }
+        if (!this.instance) this.instance = new MongoDatabase();
+
         return this.instance;
     }
 
@@ -80,5 +79,4 @@ class MongoDatabase {
     };
 }
 
-const instanceMongoDatabase = MongoDatabase.getInstance();
-export default instanceMongoDatabase;
+export default MongoDatabase.getInstance();

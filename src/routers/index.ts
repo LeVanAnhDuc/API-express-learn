@@ -5,6 +5,6 @@ import routerAuth from './auth.router';
 const router = express.Router();
 
 router.use('/auth', routerAuth);
-router.use('/todos', routerToDo);
+// router.use('/todos', routerToDo);
 
 export default router;

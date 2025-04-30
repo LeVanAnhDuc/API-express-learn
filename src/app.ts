@@ -4,8 +4,8 @@ import helmet from 'helmet';
 import 'reflect-metadata';
 
 import router from './routers';
-import instanceMongoDatabase from './dbs/init.mongodb';
-import instanceRedis from './dbs/init.redis';
+import instanceMongoDatabase from './databases/init.mongodb';
+// import instanceRedis from './dbs/init.redis';
 import config from './config';
 import { handleError, handleNotFound } from './middlewares/handleErrorMiddleware';
 
@@ -13,7 +13,7 @@ const app = express();
 
 // connect db
 instanceMongoDatabase;
-instanceRedis;
+// instanceRedis;
 
 //init middleware
 app.use(express.json());
