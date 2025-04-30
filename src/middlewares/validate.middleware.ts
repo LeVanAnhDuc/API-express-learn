@@ -9,8 +9,8 @@ import { validate } from 'class-validator';
 // others
 import { BadRequestError } from '../core/error.response';
 
-const TIME_RATE_LIMIT = 1 * 60 * 1000;
-const REQUEST_RATE_LIMIT = 2;
+const TIME_RATE_LIMIT = 2 * 60 * 1000;
+const REQUEST_RATE_LIMIT = 10;
 const MESSAGE_RATE_LIMIT = 'Too many requests, please try again later.';
 
 export const validateSchema = (schema: {
