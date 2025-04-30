@@ -1,5 +1,6 @@
 // libs
 import joi from 'joi';
+import { rateLimit } from 'express-rate-limit';
 import { NextFunction, Request, Response } from 'express';
 import lodash from 'lodash';
 import { Model, Document, isValidObjectId, FilterQuery } from 'mongoose';
@@ -7,6 +8,10 @@ import { plainToClass, ClassConstructor, classToPlain } from 'class-transformer'
 import { validate } from 'class-validator';
 // others
 import { BadRequestError } from '../core/error.response';
+
+const TIME_RATE_LIMIT = 1 * 60 * 1000;
+const REQUEST_RATE_LIMIT = 2;
+const MESSAGE_RATE_LIMIT = 'Too many requests, please try again later.';
 
 export const validateSchema = (schema: {
   body?: joi.ObjectSchema;
@@ -38,33 +43,17 @@ export const validateSchema = (schema: {
   };
 };
 
-const validateFields = async <T extends object>(req: Request, type: ClassConstructor<T>, source: 'body' | 'query') => {
-  const dtoInstance = plainToClass(type, req[source], { excludeExtraneousValues: true });
-
-  const errorsValidate = await validate(dtoInstance);
-
-  if (errorsValidate.length > 0) {
-    const errorMessage = errorsValidate.map((obj) => Object.values(obj.constraints).join(', ')).join(', ');
-
-    throw new BadRequestError(errorMessage.trim());
-  }
-
-  if (source === 'body') {
-    req.body = classToPlain(dtoInstance);
-  }
-};
-
-export const validateFieldsRequestBody = <T extends object>(type: ClassConstructor<T>) => {
-  return async (req: Request) => {
-    await validateFields(req, type, 'body');
-  };
-};
-
-export const validateFieldsRequestQuery = <T extends object>(type: ClassConstructor<T>) => {
-  return async (req: Request) => {
-    await validateFields(req, type, 'query');
-  };
-};
+export const rateLimitInstance = rateLimit({
+  windowMs: TIME_RATE_LIMIT,
+  max: REQUEST_RATE_LIMIT,
+  message: MESSAGE_RATE_LIMIT,
+  handler: (req, res, next, options) =>
+    res.status(options.statusCode).send({
+      status: 'Too Many Requests',
+      code: options.statusCode,
+      message: options.message,
+    }),
+});
 
 export const requiredBody = (req: Request) => {
   if (lodash.isEmpty(req.body)) {
