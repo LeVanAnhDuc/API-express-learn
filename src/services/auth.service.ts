@@ -11,9 +11,6 @@ import CONSTANTS from '../constants';
 import { formatSI } from '../utils';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
 
-import { Request } from 'express';
-import { IUser } from '../types/users';
-
 const { SUBJECT_EMAIL, TEMPLATE_EMAIL } = CONSTANTS;
 
 class AuthService {
@@ -46,7 +43,7 @@ class AuthService {
     if (userExists) throw new BadRequestError('Email or phone already exists');
 
     const hashPassWord = bcrypt.hashPassword(password);
-    const { otp: otpCode, timeExpire: otpExpire } = speakeasy.getOTP();
+    const { otp: otpCode, timeExpire } = speakeasy.getOTP();
 
     await authRepo.registerAccountRepo({
       fullName,
@@ -54,7 +51,7 @@ class AuthService {
       phone,
       password: hashPassWord,
       otpCode,
-      otpExpire,
+      otpExpireAt: new Date(Date.now() + timeExpire * 1000),
     });
 
     sendEmail({
@@ -66,33 +63,23 @@ class AuthService {
     return { message: 'Sign up successfully. Please check your email to verify' };
   };
 
-  // static verifyRegisterAccount = async (body: VerifyAccountDTO) => {
-  //   const { email, otpCode } = body;
-  //   const infoUser: IUser = await authRepo.findUserRepo({ email });
+  static verifySignup = async ({ email, otpCode }) => {
+    const infoUser: IUserDocument = await authRepo.findUserRepo(email);
+    if (!infoUser) throw new BadRequestError('Email not found');
 
-  //   if (!infoUser) {
-  //     throw new BadRequestError('Email not found');
-  //   }
+    const { _id: id, otpExpireAt, verifiedEmail } = infoUser;
 
-  //   const { otpExpire } = infoUser;
-  //   if (!otpExpire) {
-  //     throw new BadRequestError('Account already verified');
-  //   }
+    if (verifiedEmail) throw new BadRequestError('Account already verified');
+    if (new Date().getTime() > otpExpireAt.getTime()) throw new BadRequestError('OTP expired. Please resend OTP');
 
-  //   if (new Date().getTime() > otpExpire.getTime()) {
-  //     throw new BadRequestError('OTP expired. Please resend OTP');
-  //   }
+    const verifiedOTP = speakeasy.verifiedOTP(otpCode);
 
-  //   const verifiedOTP = await speakeasy.verifiedOTP(otpCode);
+    if (!verifiedOTP) throw new BadRequestError('OTP not match');
 
-  //   if (!verifiedOTP) {
-  //     throw new BadRequestError('OTP not match');
-  //   }
+    await authRepo.verifySignup(id);
 
-  //   await authRepo.verifySignup({ email });
-
-  //   return { message: 'verify successfully', data: undefined };
-  // };
+    return { message: 'Verify successfully' };
+  };
 
   // static reSendOTPRegister = async (body: ReSendOTPAccountDTO) => {
   //   const { email } = body;
@@ -111,7 +98,7 @@ class AuthService {
   //   await authRepo.updateOTP({
   //     email,
   //     otpCode: otp,
-  //     otpExpire: new Date(Date.now() + 120 * 1000),
+  //     otpExpireAt: new Date(Date.now() + 120 * 1000),
   //   });
 
   //   const { userName } = infoUser;
@@ -125,30 +112,30 @@ class AuthService {
   //   return { message: 'resend otp successfully' };
   // };
 
-  //   static refreshAccessToken = async (req: Request) => {
-  //     if (!req.headers?.authorization) {
-  //       throw new NotFoundError('token is not found');
-  //     }
+  // static refreshAccessToken = async (req: Request) => {
+  //   if (!req.headers?.authorization) {
+  //     throw new NotFoundError('token is not found');
+  //   }
 
-  //     const [type, token] = req.headers.authorization?.split(' ') ?? [];
-  //     const refreshToken = type === 'Bearer' ? token : undefined;
+  //   const [type, token] = req.headers.authorization?.split(' ') ?? [];
+  //   const refreshToken = type === 'Bearer' ? token : undefined;
 
-  //     if (!refreshToken) {
-  //       throw new NotFoundError('refreshToken is not found');
-  //     }
+  //   if (!refreshToken) {
+  //     throw new NotFoundError('refreshToken is not found');
+  //   }
 
-  //     const payload = await jwt.decodeRefreshToken(refreshToken);
+  //   const payload = await jwt.decodeRefreshToken(refreshToken);
 
-  //     if (!payload) {
-  //       throw new UnauthorizedError('Refresh Token is expire. Back login to get token');
-  //     }
+  //   if (!payload) {
+  //     throw new UnauthorizedError('Refresh Token is expire. Back login to get token');
+  //   }
 
-  //     const accessToken = await jwt.generateAccessToken({
-  //       id: payload.id,
-  //     });
+  //   const accessToken = await jwt.generateAccessToken({
+  //     id: payload.id,
+  //   });
 
-  //     return { message: 'get access token successfully', data: { accessToken, refreshToken } };
-  //   };
+  //   return { message: 'get access token successfully', data: { accessToken, refreshToken } };
+  // };
 }
 
 export default AuthService;

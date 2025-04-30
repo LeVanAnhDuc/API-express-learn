@@ -21,31 +21,31 @@ class AuthRepo extends Repository {
     );
   };
 
-  registerAccountRepo = async ({ fullName, email, phone, password, otpCode, otpExpire }) => {
-    return await this.create({ fullName, email, phone, password, otpCode, otpExpire });
+  registerAccountRepo = async ({ fullName, email, phone, password, otpCode, otpExpireAt }) => {
+    return await this.create({ fullName, email, phone, password, otpCode, otpExpireAt });
+  };
+
+  verifySignup = async (id) => {
+    return await this.updateMany(
+      { _id: id },
+      {
+        verifiedEmail: true,
+        otpCode: null,
+        otpExpireAt: null,
+      },
+    );
   };
 
   findIDUserRepo = async (id: string) => {
     return await this.findById(id);
   };
 
-  verifySignup = async ({ email }) => {
-    return await this.updateMany(
-      { email },
-      {
-        verifiedEmail: true,
-        otpCode: null,
-        otpExpire: null,
-      },
-    );
-  };
-
-  updateOTP = async ({ email, otpCode, otpExpire }) => {
+  updateOTP = async ({ email, otpCode, otpExpireAt }) => {
     return await this.updateMany(
       { email },
       {
         otpCode,
-        otpExpire,
+        otpExpireAt,
       },
     );
   };

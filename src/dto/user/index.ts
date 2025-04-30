@@ -17,7 +17,7 @@ class UserResponseDTO {
   public updatedAt: Date;
   public verifiedEmail: boolean;
   public otpCode: string;
-  public otpExpire: Date;
+  public otpExpireAt: Date;
   public lastLoginAt: Date;
 
   constructor(user: Partial<IUserDocument>) {

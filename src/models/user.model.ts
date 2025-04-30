@@ -53,7 +53,7 @@ const UserSchema = new Schema<IUser>(
     updatedAt: { type: Date, default: Date.now },
     verifiedEmail: { type: Boolean, default: false },
     otpCode: { type: String, default: null },
-    otpExpire: { type: Date, default: null },
+    otpExpireAt: { type: Date, default: null },
     lastLoginAt: { type: Date, default: null },
   },
   {

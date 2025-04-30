@@ -1,3 +1,4 @@
+// others
 import { reasonPhrases } from '../utils/reasonPhrases';
 import { statusCodes } from '../utils/statusCodes';
 
@@ -5,7 +6,7 @@ class SuccessResponse {
   message: string;
   status: number;
   reasonStatusCode: string;
-  data: Record<string, any>;
+  data?: Record<string, any>;
 
   constructor({ message, status, reasonStatusCode, data }) {
     this.message = message ? message : reasonStatusCode;
@@ -15,7 +16,11 @@ class SuccessResponse {
   }
 
   public send(res) {
-    return res.status(this.status).json(this);
+    return Object.keys(this.data).length > 0
+      ? res.status(this.status).json(this)
+      : res
+          .status(this.status)
+          .json({ message: this.message, status: this.status, reasonStatusCode: this.reasonStatusCode });
   }
 }
 
@@ -29,14 +34,6 @@ export class CreatedResponse extends SuccessResponse {
   constructor({ message = '', status = statusCodes.CREATED, reasonStatusCode = reasonPhrases.CREATED, data = {} }) {
     super({ message, status, reasonStatusCode, data });
   }
-
-  public send(res: any) {
-    return res.status(this.status).json({
-      message: this.message,
-      status: this.status,
-      reasonStatusCode: this.reasonStatusCode,
-    });
-  }
 }
 
 export class NoContentResponse extends SuccessResponse {
@@ -44,7 +41,7 @@ export class NoContentResponse extends SuccessResponse {
     message = '',
     status = statusCodes.NO_CONTENT,
     reasonStatusCode = reasonPhrases.NO_CONTENT,
-    data = undefined,
+    data = {},
   }) {
     super({ message, status, reasonStatusCode, data });
   }

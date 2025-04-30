@@ -17,7 +17,7 @@ export interface IUser {
   updatedAt: Date;
   verifiedEmail: boolean;
   otpCode: string;
-  otpExpire: Date;
+  otpExpireAt: Date;
   lastLoginAt: Date;
 }
 

@@ -5,30 +5,43 @@ import common from './common.schema';
 
 const { emailSchema, passwordSchema } = common;
 
+const MESSAGE_EMPTY = '{{#label}} is not allowed to be empty';
+const MESSAGE_EMAIL_INVALID = '{{#label}} is invalid';
+
 const loginSchema = joi.object({
   email: emailSchema.required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
-    'string.email': '{{#label}} must be a valid email',
+    'string.empty': MESSAGE_EMPTY,
+    'string.email': MESSAGE_EMAIL_INVALID,
   }),
   password: joi.string().required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
+    'string.empty': MESSAGE_EMPTY,
   }),
 });
 
 const signupSchema = joi.object({
   fullName: joi.string().required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
+    'string.empty': MESSAGE_EMPTY,
   }),
   email: emailSchema.required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
-    'string.email': '{{#label}} must be a valid email',
+    'string.empty': MESSAGE_EMPTY,
+    'string.email': MESSAGE_EMAIL_INVALID,
   }),
   phone: joi.string().required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
+    'string.empty': MESSAGE_EMPTY,
   }),
   password: passwordSchema.required().messages({
-    'string.empty': '{{#label}} is not allowed to be empty',
+    'string.empty': MESSAGE_EMPTY,
   }),
 });
 
-export { loginSchema, signupSchema };
+const signupVerifySchema = joi.object({
+  email: emailSchema.required().messages({
+    'string.empty': MESSAGE_EMPTY,
+    'string.email': MESSAGE_EMAIL_INVALID,
+  }),
+  otpCode: joi.string().required().messages({
+    'string.empty': MESSAGE_EMPTY,
+  }),
+});
+
+export { loginSchema, signupSchema, signupVerifySchema };
