@@ -6,9 +6,9 @@ class AuthRepo extends Repository {
     super(User, 'User');
   }
 
-  findUserRepo = async (email: string) => {
+  findUserRepo = async (emailOrPhone: string) => {
     return await this.findOne({
-      email,
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
     });
   };
 
@@ -21,8 +21,8 @@ class AuthRepo extends Repository {
     );
   };
 
-  registerAccountRepo = async ({ userName, email, phone, passWord, otpCode, otpExpire }) => {
-    return await this.create({ userName, email, phone, passWord, otpCode, otpExpire });
+  registerAccountRepo = async ({ fullName, email, phone, password, otpCode, otpExpire }) => {
+    return await this.create({ fullName, email, phone, password, otpCode, otpExpire });
   };
 
   findIDUserRepo = async (id: string) => {

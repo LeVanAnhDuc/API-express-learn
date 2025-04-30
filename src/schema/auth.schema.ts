@@ -10,9 +10,25 @@ const loginSchema = joi.object({
     'string.empty': '{{#label}} is not allowed to be empty',
     'string.email': '{{#label}} must be a valid email',
   }),
+  password: joi.string().required().messages({
+    'string.empty': '{{#label}} is not allowed to be empty',
+  }),
+});
+
+const signupSchema = joi.object({
+  fullName: joi.string().required().messages({
+    'string.empty': '{{#label}} is not allowed to be empty',
+  }),
+  email: emailSchema.required().messages({
+    'string.empty': '{{#label}} is not allowed to be empty',
+    'string.email': '{{#label}} must be a valid email',
+  }),
+  phone: joi.string().required().messages({
+    'string.empty': '{{#label}} is not allowed to be empty',
+  }),
   password: passwordSchema.required().messages({
     'string.empty': '{{#label}} is not allowed to be empty',
   }),
 });
 
-export { loginSchema };
+export { loginSchema, signupSchema };

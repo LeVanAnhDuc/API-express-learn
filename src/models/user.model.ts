@@ -28,7 +28,7 @@ export const IUserSpecificallySchema = new Schema<IUserSpecifically>(
 
 const UserSchema = new Schema<IUser>(
   {
-    userName: { type: String, trim: true, unique: true, required: true },
+    userName: { type: String, default: null },
     fullName: { type: String, default: null },
     email: {
       type: String,
@@ -42,7 +42,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       required: true,
     },
-    passWord: { type: String, trim: true, required: true },
+    password: { type: String, trim: true, required: true },
     isActive: { type: Boolean, default: true },
     dateOfBirth: { type: Date, default: null },
     gender: { type: String, enum: Object.values(EGender), default: null },

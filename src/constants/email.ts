@@ -1,4 +1,4 @@
-export const templateEmail = `
+export const TEMPLATE_EMAIL = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -66,17 +66,17 @@ export const templateEmail = `
     <body>
         <div class="email-container">
             <div class="header">
-                <img src="https://res.cloudinary.com/dpa7sugh0/image/upload/v1725027666/rpddlkffoaihk7u3vrfe.png" alt="LEDUC Logo">
+                <img src="https://avatars.githubusercontent.com/u/138034754?s=400&u=c8b517fabf46c78da22fc0e38fffc00a04f74e35&v=4" alt="LEDUC Logo">
                 <h1>Welcome to DucApp!</h1>
             </div>
             <div class="content">
-                <h2>Hello, [userName]!</h2>
+                <h2>Hello, [fullName]!</h2>
                 <p>Thank you for registering with us. To complete your registration, please use the following One-Time Password (OTP) within the next 2 minutes:</p>
-                <div class="otp">[otp]</div>
+                <div class="otp">[otpCode]</div>
                 <p>If you did not request this code, please ignore this email.</p>
             </div>
             <div class="footer">
-                <p>&copy; 2024 DucApp. All rights reserved.</p>
+                <p>&copy; 2025 DucApp. All rights reserved.</p>
                 <p>1234 Street, Ho Chi Minh City, Viet Nam</p>
             </div>
         </div>
@@ -84,4 +84,4 @@ export const templateEmail = `
     </html>
     `;
 
-export const subjectEmail = 'Account Registration Confirmation - DucApp';
+export const SUBJECT_EMAIL = 'Account Registration Confirmation - DucApp';

@@ -1,4 +1,5 @@
 import END_POINTS from './endpoint';
+import { SUBJECT_EMAIL, TEMPLATE_EMAIL } from './email';
 
 enum EGender {
   MALE = 'MALE',
@@ -12,6 +13,6 @@ enum ERole {
   MODERATOR = 'MODERATOR',
 }
 
-const CONSTANTS = { EGender, ERole, END_POINTS };
+const CONSTANTS = { EGender, ERole, END_POINTS, SUBJECT_EMAIL, TEMPLATE_EMAIL };
 
 export default CONSTANTS;

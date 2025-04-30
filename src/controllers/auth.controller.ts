@@ -6,9 +6,13 @@ import AuthService from '../services/auth.service';
 import { CreatedResponse, OKResponse } from '../core/success.response';
 
 class AuthController {
-  //   registerAccount = async (req: Request, res: Response, next: NextFunction) => {
-  //     return new CreatedResponse(await AuthService.registerAccount(req.body)).send(res);
-  //   };
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    return new OKResponse(await AuthService.login(req.body)).send(res);
+  };
+
+  signup = async (req: Request, res: Response, next: NextFunction) => {
+    return new CreatedResponse(await AuthService.signup(req.body)).send(res);
+  };
 
   //   verifyRegisterAccount = async (req: Request, res: Response, next: NextFunction) => {
   //     return new OKResponse(await AuthService.verifyRegisterAccount(req.body)).send(res);
@@ -17,10 +21,6 @@ class AuthController {
   //   reSendOTPRegister = async (req: Request, res: Response, next: NextFunction) => {
   //     return new OKResponse(await AuthService.reSendOTPRegister(req.body)).send(res);
   //   };
-
-  login = async (req: Request, res: Response, next: NextFunction) => {
-    return new OKResponse(await AuthService.login(req.body)).send(res);
-  };
 
   //   refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
   //     return new CreatedResponse(await AuthService.refreshAccessToken(req)).send(res);

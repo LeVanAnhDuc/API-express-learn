@@ -1,24 +1,23 @@
+// libs
 import express from 'express';
+// controllers
 import AuthController from '../controllers/auth.controller';
-import { checkUniqueValues, validateFieldsRequestBody, validateSchema } from '../middlewares/validate.middleware';
-import { CreateAccountDTO, LoginAccountDTO, ReSendOTPAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
-import { asyncHandler, asyncMiddlewareHandler } from '../helper';
-import User from '../models/user.model';
-
+// schemas
+import { loginSchema, signupSchema } from '../schema/auth.schema';
+// middlewares
+import { validateSchema } from '../middlewares/validate.middleware';
 // others
 import CONSTANTS from '../constants';
-import { loginSchema } from '../schema/auth.schema';
+import { asyncHandler } from '../helper';
+
+import User from '../models/user.model';
 
 const { LOGIN, REFRESH_TOKEN, RESEND_OTP, SIGNUP, VERIFY_SIGNUP } = CONSTANTS.END_POINTS;
 
 const router = express.Router();
 
-// router.post(
-//   '/signup',
-//   asyncMiddlewareHandler(validateFieldsRequestBody(CreateAccountDTO)),
-//   asyncMiddlewareHandler(checkUniqueValues(['userName', 'email', 'phone'], User)),
-//   asyncHandler(AuthController.registerAccount),
-// );
+router.post(LOGIN, validateSchema({ body: loginSchema }), asyncHandler(AuthController.login));
+router.post(SIGNUP, validateSchema({ body: signupSchema }), asyncHandler(AuthController.signup));
 
 // router.post(
 //   '/verify-signup',
@@ -31,8 +30,6 @@ const router = express.Router();
 //   asyncMiddlewareHandler(validateFieldsRequestBody(ReSendOTPAccountDTO)),
 //   asyncHandler(AuthController.reSendOTPRegister),
 // );
-
-router.post(LOGIN, validateSchema({ body: loginSchema }), asyncHandler(AuthController.login));
 
 // router.post('/refresh-token', asyncHandler(AuthController.refreshAccessToken));
 

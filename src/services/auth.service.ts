@@ -1,41 +1,70 @@
+// libs
+import { bcrypt, jwt, sendEmail, speakeasy } from '../libs';
 // models
 import { IUserDocument } from '../models/user.model';
+// repositories
+import { authRepo } from '../repositories';
 // dto
 import { UserResponseDTO } from '../dto/user';
+// others
+import CONSTANTS from '../constants';
+import { formatSI } from '../utils';
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
 
 import { Request } from 'express';
-import { CreateAccountDTO, LoginAccountDTO, ReSendOTPAccountDTO, VerifyAccountDTO } from '../dto/auth.dto';
-import { bcrypt, jwt, sendEmail, speakeasy } from '../libs';
-import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
-import { authRepo } from '../repositories';
-import { formatSI } from '../utils/common';
-import { subjectEmail, templateEmail } from '../constants/email';
 import { IUser } from '../types/users';
 
+const { SUBJECT_EMAIL, TEMPLATE_EMAIL } = CONSTANTS;
+
 class AuthService {
-  // static registerAccount = async (body: CreateAccountDTO) => {
-  //   const { userName, email, phone, passWord } = body;
+  static login = async ({ email, password }) => {
+    const infoUser: IUserDocument = await authRepo.findUserRepo(email);
 
-  //   const hashPassWord = await bcrypt.hashPassword(passWord);
-  //   const otp = await speakeasy.getOTP();
+    const { _id: id, password: passWorkHash, verifiedEmail } = infoUser;
+    const passwordMatch = bcrypt.isValidPassword(password, passWorkHash);
 
-  //   const newAccount = await authRepo.registerAccountRepo({
-  //     userName,
-  //     email,
-  //     phone,
-  //     passWord: hashPassWord,
-  //     otpCode: otp,
-  //     otpExpire: new Date(Date.now() + 120 * 1000),
-  //   });
+    if (!infoUser || !passwordMatch) throw new BadRequestError('Invalid email or password');
+    if (!verifiedEmail) throw new ForbiddenError('Account is not verify');
 
-  //   await sendEmail({
-  //     email,
-  //     subject: subjectEmail,
-  //     message: formatSI(templateEmail, { userName, otp }),
-  //   });
+    await authRepo.updateLastLoginRepo(id as string);
 
-  //   return { message: 'register successfully', data: newAccount };
-  // };
+    const { accessToken, refreshToken } = jwt.generatePairToken({ id });
+    const userInfo = new UserResponseDTO(infoUser);
+
+    return {
+      message: 'login successfully',
+      data: {
+        accessToken,
+        refreshToken,
+        userInfo,
+      },
+    };
+  };
+
+  static signup = async ({ fullName, email, phone, password }) => {
+    const userExists = (await authRepo.findUserRepo(email)) || (await authRepo.findUserRepo(phone));
+    if (userExists) throw new BadRequestError('Email or phone already exists');
+
+    const hashPassWord = bcrypt.hashPassword(password);
+    const { otp: otpCode, timeExpire: otpExpire } = speakeasy.getOTP();
+
+    await authRepo.registerAccountRepo({
+      fullName,
+      email,
+      phone,
+      password: hashPassWord,
+      otpCode,
+      otpExpire,
+    });
+
+    sendEmail({
+      email,
+      subject: SUBJECT_EMAIL,
+      message: formatSI(TEMPLATE_EMAIL, { fullName, otpCode }),
+    });
+
+    return { message: 'Sign up successfully. Please check your email to verify' };
+  };
 
   // static verifyRegisterAccount = async (body: VerifyAccountDTO) => {
   //   const { email, otpCode } = body;
@@ -95,30 +124,6 @@ class AuthService {
 
   //   return { message: 'resend otp successfully' };
   // };
-
-  static login = async ({ email, password }) => {
-    const infoUser: IUserDocument = await authRepo.findUserRepo(email);
-
-    const { _id: id, passWord: passWorHash, verifiedEmail } = infoUser;
-    const passwordMatch = bcrypt.isValidPassword(password, passWorHash);
-
-    if (!infoUser || !passwordMatch) throw new BadRequestError('Invalid email or password');
-    if (!verifiedEmail) throw new ForbiddenError('Account is not verify');
-
-    await authRepo.updateLastLoginRepo(id as string);
-
-    const { accessToken, refreshToken } = jwt.generatePairToken({ id });
-    const userInfo = new UserResponseDTO(infoUser);
-
-    return {
-      message: 'login successfully',
-      data: {
-        accessToken,
-        refreshToken,
-        userInfo,
-      },
-    };
-  };
 
   //   static refreshAccessToken = async (req: Request) => {
   //     if (!req.headers?.authorization) {

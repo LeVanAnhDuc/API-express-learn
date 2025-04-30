@@ -6,7 +6,7 @@ class UserResponseDTO {
   public email: string;
   public fullName: string;
   public phone: string;
-  public passWord: string;
+  public password: string;
   public isActive: boolean;
   public dateOfBirth: Date;
   public gender: string;

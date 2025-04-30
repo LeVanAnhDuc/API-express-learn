@@ -66,29 +66,6 @@ export const validateFieldsRequestQuery = <T extends object>(type: ClassConstruc
   };
 };
 
-export const checkUniqueValues = <T extends Document, K extends keyof Omit<T, keyof Document>>(
-  fields: K[],
-  model: Model<T>,
-) => {
-  return async (req: Request) => {
-    const errors = [];
-
-    for (const field of fields) {
-      const query: FilterQuery<T> = { [field]: req.body[field] } as FilterQuery<T>;
-
-      const fieldExist = await model.exists(query);
-
-      if (fieldExist) {
-        errors.push(`${field as string} is exist`);
-      }
-    }
-
-    if (errors.length > 0) {
-      throw new BadRequestError(errors.join(', '));
-    }
-  };
-};
-
 export const requiredBody = (req: Request) => {
   if (lodash.isEmpty(req.body)) {
     throw new BadRequestError('data not empty');
