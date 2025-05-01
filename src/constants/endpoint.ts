@@ -4,6 +4,7 @@ enum END_POINTS {
   RESEND_OTP = '/resend-otp',
   LOGIN = '/login',
   REFRESH_TOKEN = '/refresh-token',
+  LOGOUT = '/logout',
 }
 
 export default END_POINTS;

@@ -104,6 +104,14 @@ class AuthService {
     return { message: 'Re-send OTP successfully' };
   };
 
+  static logOut = async (res) => {
+    setCookie({ res, name: 'accessToken', value: '', maxAge: 0 });
+    setCookie({ res, name: 'refreshToken', value: '', maxAge: 0 });
+    setCookie({ res, name: 'userInfo', value: '', maxAge: 0 });
+
+    return { message: 'Log out successfully' };
+  };
+
   // static refreshAccessToken = async (req: Request) => {
   //   if (!req.headers?.authorization) {
   //     throw new NotFoundError('token is not found');

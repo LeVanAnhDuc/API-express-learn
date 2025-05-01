@@ -22,6 +22,10 @@ class AuthController {
     return new OKResponse(await AuthService.reSendOTPSignup(req.body)).send(res);
   };
 
+  logOut = async (req: Request, res: Response) => {
+    return new OKResponse(await AuthService.logOut(res)).send(res);
+  };
+
   //   refreshAccessToken = async (req: Request, res: Response) => {
   //     return new CreatedResponse(await AuthService.refreshAccessToken(req)).send(res);
   //   };
