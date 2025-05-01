@@ -45,22 +45,6 @@ class AuthRepo extends Repository {
       },
     );
   };
-
-  findIDUserRepo = async (id: string) => {
-    return await this.findById(id);
-  };
-
-  saveTokenRepo = async ({ infoUser, accessToken, refreshToken }) => {
-    this.SetHsetWithCache(
-      {
-        id: infoUser._id,
-      },
-      {
-        accessToken,
-        refreshToken,
-      },
-    );
-  };
 }
 
 export default AuthRepo;
