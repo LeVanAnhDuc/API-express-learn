@@ -19,14 +19,11 @@ router.post(SIGNUP, validateSchema({ body: signupSchema }), asyncHandler(AuthCon
 router.post(VERIFY_SIGNUP, validateSchema({ body: signupVerifySchema }), asyncHandler(AuthController.verifySignup));
 router.post(RESEND_OTP, validateSchema({ body: reSendOtpSchema }), asyncHandler(AuthController.reSendOTPSignup));
 router.post(LOGOUT, asyncHandler(AuthController.logOut));
-// router.post('/refresh-token', asyncHandler(AuthController.refreshAccessToken));
+router.post(REFRESH_TOKEN, asyncHandler(AuthController.refreshAccessToken));
 
-// Refresh Token, , Forgot Password
+// Forgot Password
 // Change Password,
 // Revoke Token, 2FA
-
-// Logout: Cho phép người dùng đăng xuất, thường bằng cách vô hiệu hóa refreshToken (xóa khỏi database)
-//  đánh dấu phiên hết hiệu lực.
 
 // Revoke Token: ô hiệu hóa một refreshToken hoặc accessToken cụ thể, thường dùng khi phát hiện hành vi đáng ngờ hoặc người dùng đăng xuất
 // từ một thiết bị cụ thể.

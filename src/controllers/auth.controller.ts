@@ -26,9 +26,9 @@ class AuthController {
     return new OKResponse(await AuthService.logOut(res)).send(res);
   };
 
-  //   refreshAccessToken = async (req: Request, res: Response) => {
-  //     return new CreatedResponse(await AuthService.refreshAccessToken(req)).send(res);
-  //   };
+  refreshAccessToken = async (req: Request, res: Response) => {
+    return new CreatedResponse(await AuthService.refreshAccessToken(res, req)).send(res);
+  };
 }
 
 export default new AuthController();

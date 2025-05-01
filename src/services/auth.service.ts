@@ -1,5 +1,6 @@
 // libs
 import { bcrypt, jwt, sendEmail, speakeasy } from '../libs';
+import { Response, Request } from 'express';
 // models
 import { IUserDocument } from '../models/user.model';
 // repositories
@@ -9,7 +10,7 @@ import { UserResponseDTO } from '../dto/user';
 // others
 import CONSTANTS from '../constants';
 import { formatSI, setCookie } from '../utils';
-import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '../core/error.response';
 
 const { SUBJECT_EMAIL, TEMPLATE_EMAIL, EXPIRE_TOKEN } = CONSTANTS;
 
@@ -104,7 +105,7 @@ class AuthService {
     return { message: 'Re-send OTP successfully' };
   };
 
-  static logOut = async (res) => {
+  static logOut = async (res: Response) => {
     setCookie({ res, name: 'accessToken', value: '', maxAge: 0 });
     setCookie({ res, name: 'refreshToken', value: '', maxAge: 0 });
     setCookie({ res, name: 'userInfo', value: '', maxAge: 0 });
@@ -112,30 +113,22 @@ class AuthService {
     return { message: 'Log out successfully' };
   };
 
-  // static refreshAccessToken = async (req: Request) => {
-  //   if (!req.headers?.authorization) {
-  //     throw new NotFoundError('token is not found');
-  //   }
+  static refreshAccessToken = async (res: Response, req: Request) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) throw new UnauthorizedError('Refresh token is not found');
 
-  //   const [type, token] = req.headers.authorization?.split(' ') ?? [];
-  //   const refreshToken = type === 'Bearer' ? token : undefined;
+    const payload = jwt.decodeRefreshToken(refreshToken);
 
-  //   if (!refreshToken) {
-  //     throw new NotFoundError('refreshToken is not found');
-  //   }
+    if (!payload || !payload.id) throw new UnauthorizedError('Invalid refresh token');
 
-  //   const payload = await jwt.decodeRefreshToken(refreshToken);
+    const accessToken = jwt.generateAccessToken({
+      id: payload.id,
+    });
 
-  //   if (!payload) {
-  //     throw new UnauthorizedError('Refresh Token is expire. Back login to get token');
-  //   }
+    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: EXPIRE_TOKEN.NUMBER_ACCESS_TOKEN });
 
-  //   const accessToken = await jwt.generateAccessToken({
-  //     id: payload.id,
-  //   });
-
-  //   return { message: 'get access token successfully', data: { accessToken, refreshToken } };
-  // };
+    return { message: 'Refresh token successfully' };
+  };
 }
 
 export default AuthService;
