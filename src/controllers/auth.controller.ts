@@ -1,5 +1,5 @@
 // libs
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 // services
 import AuthService from '../services/auth.service';
 // others
@@ -7,7 +7,7 @@ import { CreatedResponse, OKResponse } from '../core/success.response';
 
 class AuthController {
   login = async (req: Request, res: Response) => {
-    return new OKResponse(await AuthService.login(req.body)).send(res);
+    return new OKResponse(await AuthService.login(req.body, res)).send(res);
   };
 
   signup = async (req: Request, res: Response) => {

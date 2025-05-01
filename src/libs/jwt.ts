@@ -2,22 +2,21 @@
 import jwt from 'jsonwebtoken';
 // others
 import config from '../config';
+import CONSTANTS from '../constants';
 
-const EXPIRE_IN = {
-  ACCESS_TOKEN: '8h',
-  REFRESH_TOKEN: '7day',
-};
+const { EXPIRE_TOKEN } = CONSTANTS;
+
 const ALGORITHM_TOKEN = 'HS256';
 
 export const generatePairToken = (payload) => {
   const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
     algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_IN.ACCESS_TOKEN,
+    expiresIn: EXPIRE_TOKEN.ACCESS_TOKEN,
   });
 
   const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
     algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_IN.REFRESH_TOKEN,
+    expiresIn: EXPIRE_TOKEN.REFRESH_TOKEN,
   });
 
   return {
@@ -29,7 +28,7 @@ export const generatePairToken = (payload) => {
 export const generateAccessToken = (payload) => {
   const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
     algorithm: ALGORITHM_TOKEN,
-    expiresIn: EXPIRE_IN.ACCESS_TOKEN,
+    expiresIn: EXPIRE_TOKEN.ACCESS_TOKEN,
   });
 
   return accessToken;

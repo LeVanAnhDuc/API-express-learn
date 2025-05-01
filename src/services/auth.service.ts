@@ -8,13 +8,13 @@ import { authRepo } from '../repositories';
 import { UserResponseDTO } from '../dto/user';
 // others
 import CONSTANTS from '../constants';
-import { formatSI } from '../utils';
+import { formatSI, setCookie } from '../utils';
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from '../core/error.response';
 
-const { SUBJECT_EMAIL, TEMPLATE_EMAIL } = CONSTANTS;
+const { SUBJECT_EMAIL, TEMPLATE_EMAIL, EXPIRE_TOKEN } = CONSTANTS;
 
 class AuthService {
-  static login = async ({ email, password }) => {
+  static login = async ({ email, password }, res) => {
     const infoUser: IUserDocument = await authRepo.findUserRepo(email);
 
     const { _id: id, password: passWorkHash, verifiedEmail } = infoUser;
@@ -28,14 +28,11 @@ class AuthService {
     const { accessToken, refreshToken } = jwt.generatePairToken({ id });
     const userInfo = new UserResponseDTO(infoUser);
 
-    return {
-      message: 'login successfully',
-      data: {
-        accessToken,
-        refreshToken,
-        userInfo,
-      },
-    };
+    setCookie({ res, name: 'accessToken', value: accessToken, maxAge: EXPIRE_TOKEN.NUMBER_ACCESS_TOKEN });
+    setCookie({ res, name: 'refreshToken', value: refreshToken, maxAge: EXPIRE_TOKEN.NUMBER_REFRESH_TOKEN });
+    setCookie({ res, name: 'userInfo', value: userInfo, maxAge: EXPIRE_TOKEN.NUMBER_REFRESH_TOKEN });
+
+    return { message: 'login successfully' };
   };
 
   static signup = async ({ fullName, email, phone, password }) => {

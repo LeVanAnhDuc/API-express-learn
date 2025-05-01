@@ -2,6 +2,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import 'reflect-metadata';
+import cookieParser from 'cookie-parser';
 // routers
 import router from './routers';
 // databases
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(rateLimitInstance);
+app.use(cookieParser());
 
 // router
 app.use('/api/v1', router);
