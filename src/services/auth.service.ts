@@ -4,7 +4,7 @@ import { Response, Request } from 'express';
 // models
 import { IUserDocument } from '../models/user.model';
 // repositories
-import { authRepo } from '../repositories';
+import { authRepo, passwordResetTokenRepo } from '../repositories';
 // dto
 import { UserResponseDTO } from '../dto/user';
 // others
@@ -12,7 +12,13 @@ import CONSTANTS from '../constants';
 import { formatSI, setCookie } from '../utils';
 import { BadRequestError, ForbiddenError, UnauthorizedError } from '../core/error.response';
 
-const { SUBJECT_EMAIL, TEMPLATE_EMAIL, EXPIRE_TOKEN } = CONSTANTS;
+const {
+  SUBJECT_EMAIL_SIGNUP,
+  TEMPLATE_EMAIL_SIGNUP,
+  EXPIRE_TOKEN,
+  SUBJECT_EMAIL_RESET_PASS,
+  TEMPLATE_EMAIL_RESET_PASS,
+} = CONSTANTS;
 
 class AuthService {
   static login = async ({ email, password }, res) => {
@@ -54,8 +60,8 @@ class AuthService {
 
     sendEmail({
       email,
-      subject: SUBJECT_EMAIL,
-      message: formatSI(TEMPLATE_EMAIL, { fullName, otpCode }),
+      subject: SUBJECT_EMAIL_SIGNUP,
+      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
     });
 
     return { message: 'Sign up successfully. Please check your email to verify' };
@@ -98,8 +104,8 @@ class AuthService {
 
     await sendEmail({
       email,
-      subject: SUBJECT_EMAIL,
-      message: formatSI(TEMPLATE_EMAIL, { fullName, otpCode }),
+      subject: SUBJECT_EMAIL_SIGNUP,
+      message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
     });
 
     return { message: 'Re-send OTP successfully' };
@@ -128,6 +134,57 @@ class AuthService {
     setCookie({ res, name: 'accessToken', value: accessToken, maxAge: EXPIRE_TOKEN.NUMBER_ACCESS_TOKEN });
 
     return { message: 'Refresh token successfully' };
+  };
+
+  static sendOtpForgotPassword = async ({ email }, res) => {
+    const infoUser: IUserDocument = await authRepo.findUserRepo(email);
+    if (!infoUser) throw new BadRequestError('Email not found');
+
+    const { _id: id, fullName } = infoUser;
+    const { otp: otpCode, timeExpire } = speakeasy.getOTP();
+    const resetPasswordToken = jwt.generateResetPasswordToken({ id });
+
+    await passwordResetTokenRepo.createPasswordResetToken({
+      userId: id,
+      email,
+      otpCode,
+      otpExpireAt: new Date(Date.now() + timeExpire * 1000),
+      resetToken: resetPasswordToken,
+      resetTokenExpireAt: new Date(Date.now() + EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN),
+    });
+
+    await sendEmail({
+      email,
+      subject: SUBJECT_EMAIL_RESET_PASS,
+      message: formatSI(TEMPLATE_EMAIL_RESET_PASS, { fullName, otpCode }),
+    });
+
+    setCookie({
+      res,
+      name: 'resetPasswordToken',
+      value: resetPasswordToken,
+      maxAge: EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN,
+    });
+
+    return { message: 'Send OTP successfully' };
+  };
+
+  static forgotPassword = async ({ email }) => {
+    // const infoUser: IUserDocument = await authRepo.findUserRepo(email);
+    // if (!infoUser) throw new BadRequestError('Email not found');
+    // const { fullName } = infoUser;
+    // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
+    // await authRepo.updateOTP({
+    //   email,
+    //   otpCode,
+    //   otpExpireAt: new Date(Date.now() + timeExpire * 1000),
+    // });
+    // await sendEmail({
+    //   email,
+    //   subject: SUBJECT_EMAIL_SIGNUP,
+    //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
+    // });
+    // return { message: 'Re-send OTP successfully' };
   };
 }
 

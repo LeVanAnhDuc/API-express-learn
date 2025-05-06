@@ -3,14 +3,22 @@ import express from 'express';
 // controllers
 import AuthController from '../controllers/auth.controller';
 // schemas
-import { loginSchema, reSendOtpSchema, signupSchema, signupVerifySchema } from '../schema/auth.schema';
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  reSendOtpSchema,
+  sendOtpForgotPassword,
+  signupSchema,
+  signupVerifySchema,
+} from '../schema/auth.schema';
 // middlewares
 import { validateSchema } from '../middlewares/validate.middleware';
 // others
 import CONSTANTS from '../constants';
 import { asyncHandler } from '../helper';
 
-const { LOGIN, REFRESH_TOKEN, RESEND_OTP, SIGNUP, VERIFY_SIGNUP, LOGOUT } = CONSTANTS.END_POINTS;
+const { LOGIN, REFRESH_TOKEN, RESEND_OTP, SIGNUP, VERIFY_SIGNUP, LOGOUT, FORGOT_PASSWORD, SEND_OTP_FORGOT_PASSWORD } =
+  CONSTANTS.END_POINTS;
 
 const router = express.Router();
 
@@ -20,6 +28,16 @@ router.post(VERIFY_SIGNUP, validateSchema({ body: signupVerifySchema }), asyncHa
 router.post(RESEND_OTP, validateSchema({ body: reSendOtpSchema }), asyncHandler(AuthController.reSendOTPSignup));
 router.post(LOGOUT, asyncHandler(AuthController.logOut));
 router.post(REFRESH_TOKEN, asyncHandler(AuthController.refreshAccessToken));
+router.post(
+  SEND_OTP_FORGOT_PASSWORD,
+  validateSchema({ body: sendOtpForgotPassword }),
+  asyncHandler(AuthController.sendOtpForgotPassword),
+);
+// router.post(
+//   FORGOT_PASSWORD,
+//   validateSchema({ body: forgotPasswordSchema }),
+//   asyncHandler(AuthController.forgotPassword),
+// );
 
 // Forgot Password
 // Change Password,

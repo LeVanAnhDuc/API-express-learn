@@ -34,6 +34,15 @@ export const generateAccessToken = (payload) => {
   return accessToken;
 };
 
+export const generateResetPasswordToken = (payload) => {
+  const ResetPasswordToken = jwt.sign(payload, config.JWT_RESET_PASS_SECRET, {
+    algorithm: ALGORITHM_TOKEN,
+    expiresIn: EXPIRE_TOKEN.RESET_PASS_TOKEN,
+  });
+
+  return ResetPasswordToken;
+};
+
 export const decodeRefreshToken = (token) => {
   try {
     return jwt.verify(token, config.JWT_REFRESH_SECRET, {
@@ -47,6 +56,16 @@ export const decodeRefreshToken = (token) => {
 export const decodeAccessToken = (token) => {
   try {
     return jwt.verify(token, config.JWT_ACCESS_SECRET, {
+      algorithms: ALGORITHM_TOKEN,
+    });
+  } catch {
+    return null;
+  }
+};
+
+export const decodeResetPasswordToken = (token) => {
+  try {
+    return jwt.verify(token, config.JWT_RESET_PASS_SECRET, {
       algorithms: ALGORITHM_TOKEN,
     });
   } catch {

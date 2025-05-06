@@ -1,6 +1,5 @@
 // libs
 import mongoose, { Document } from 'mongoose';
-import validator from 'validator';
 // types
 import { IUser, IUserSpecifically } from '../types/users';
 // others
