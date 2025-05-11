@@ -6,7 +6,8 @@ enum END_POINTS {
   REFRESH_TOKEN = '/refresh-token',
   LOGOUT = '/logout',
   SEND_OTP_FORGOT_PASSWORD = '/send-otp-forgot-password',
-  FORGOT_PASSWORD = '/forgot-password',
+  CONFIRM_OTP_FORGOT_PASSWORD = '/confirm-otp-forgot-password',
+  UPDATE_PASSWORD_FORGOT_PASSWORD = '/update-password-forgot-password',
 }
 
 export default END_POINTS;

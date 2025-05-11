@@ -4,7 +4,7 @@ import { Response, Request } from 'express';
 // models
 import { IUserDocument } from '../models/user.model';
 // repositories
-import { authRepo, passwordResetTokenRepo } from '../repositories';
+import { authRepo, userResetPasswordTokenRepo } from '../repositories';
 // dto
 import { UserResponseDTO } from '../dto/user';
 // others
@@ -115,6 +115,7 @@ class AuthService {
     setCookie({ res, name: 'accessToken', value: '', maxAge: 0 });
     setCookie({ res, name: 'refreshToken', value: '', maxAge: 0 });
     setCookie({ res, name: 'userInfo', value: '', maxAge: 0 });
+    setCookie({ res, name: 'resetPasswordToken', value: '', maxAge: 0 });
 
     return { message: 'Log out successfully' };
   };
@@ -144,7 +145,7 @@ class AuthService {
     const { otp: otpCode, timeExpire } = speakeasy.getOTP();
     const resetPasswordToken = jwt.generateResetPasswordToken({ id });
 
-    await passwordResetTokenRepo.createPasswordResetToken({
+    await userResetPasswordTokenRepo.createPasswordResetToken({
       userId: id,
       email,
       otpCode,
@@ -163,28 +164,44 @@ class AuthService {
       res,
       name: 'resetPasswordToken',
       value: resetPasswordToken,
-      maxAge: EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN,
+      maxAge: EXPIRE_TOKEN.NUMBER_RESET_PASS_TOKEN + 1000,
     });
 
     return { message: 'Send OTP successfully' };
   };
 
-  static forgotPassword = async ({ email }) => {
-    // const infoUser: IUserDocument = await authRepo.findUserRepo(email);
-    // if (!infoUser) throw new BadRequestError('Email not found');
-    // const { fullName } = infoUser;
-    // const { otp: otpCode, timeExpire } = speakeasy.getOTP();
-    // await authRepo.updateOTP({
-    //   email,
-    //   otpCode,
-    //   otpExpireAt: new Date(Date.now() + timeExpire * 1000),
-    // });
-    // await sendEmail({
-    //   email,
-    //   subject: SUBJECT_EMAIL_SIGNUP,
-    //   message: formatSI(TEMPLATE_EMAIL_SIGNUP, { fullName, otpCode }),
-    // });
-    // return { message: 'Re-send OTP successfully' };
+  static confirmOpForgotPassword = async ({ otpCode }, req) => {
+    const resetPasswordToken = req.cookies.resetPasswordToken;
+    if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+
+    const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+
+    const verifiedOTP = speakeasy.verifiedOTP(otpCode);
+    if (!verifiedOTP) throw new BadRequestError('OTP not match');
+
+    userResetPasswordTokenRepo.updateVerifyOTP(resetPasswordToken);
+
+    return { message: 'Confirm OTP successfully' };
+  };
+
+  static updatePasswordForgotPassword = async ({ password }, req) => {
+    const resetPasswordToken = req.cookies.resetPasswordToken;
+    if (!resetPasswordToken) throw new UnauthorizedError('Reset password token is not found');
+
+    const payload = jwt.decodeResetPasswordToken(resetPasswordToken);
+    if (!payload || !payload.id) throw new UnauthorizedError('Invalid reset password token');
+
+    const verifiedOTP = userResetPasswordTokenRepo.getVerifiedOTP(resetPasswordToken);
+    if (!verifiedOTP) throw new BadRequestError('OTP is not verified');
+
+    const hashPassWord = bcrypt.hashPassword(password);
+    authRepo.updatePasswordById({ id: payload.id, password: hashPassWord });
+    userResetPasswordTokenRepo.usedForPasswordResetToken(resetPasswordToken);
+
+    setCookie({ res: req.res, name: 'resetPasswordToken', value: '', maxAge: 0 });
+
+    return { message: 'Update password successfully' };
   };
 }
 

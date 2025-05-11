@@ -34,9 +34,13 @@ class AuthController {
     return new OKResponse(await AuthService.sendOtpForgotPassword(req.body, res)).send(res);
   };
 
-  // forgotPassword = async (req: Request, res: Response) => {
-  //   return new OKResponse(await AuthService.forgotPassword(req.body)).send(res);
-  // };
+  confirmOpForgotPassword = async (req: Request, res: Response) => {
+    return new OKResponse(await AuthService.confirmOpForgotPassword(req.body, req)).send(res);
+  };
+
+  updatePasswordForgotPassword = async (req: Request, res: Response) => {
+    return new OKResponse(await AuthService.updatePasswordForgotPassword(req.body, req)).send(res);
+  };
 }
 
 export default new AuthController();

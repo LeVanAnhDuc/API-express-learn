@@ -18,6 +18,7 @@ const IUserResetPasswordTokenSchema = new Schema<IUserResetPasswordToken>(
     otpExpireAt: { type: Date, default: null },
     resetToken: { type: String, default: null },
     resetTokenExpireAt: { type: Date, default: null },
+    otpVerified: { type: Boolean, default: false },
   },
   {
     collection: 'user_reset_password_tokens',

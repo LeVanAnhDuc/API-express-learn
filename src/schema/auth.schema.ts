@@ -58,12 +58,14 @@ export const sendOtpForgotPassword = joi.object({
   }),
 });
 
-export const forgotPasswordSchema = joi.object({
-  email: emailSchema.required().messages({
-    'string.empty': MESSAGE_EMPTY,
-    'string.email': MESSAGE_EMAIL_INVALID,
-  }),
+export const confirmOpForgotPasswordSchema = joi.object({
   otpCode: joi.string().required().messages({
+    'string.empty': MESSAGE_EMPTY,
+  }),
+});
+
+export const updatePasswordForgotPasswordSchema = joi.object({
+  password: passwordSchema.required().messages({
     'string.empty': MESSAGE_EMPTY,
   }),
 });

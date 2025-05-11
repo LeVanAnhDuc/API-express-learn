@@ -8,6 +8,7 @@ export interface IUserResetPasswordToken {
   resetTokenExpireAt: Date;
   otpCode: string;
   otpExpireAt: Date;
+  otpVerified: boolean;
   createdAt: Date;
   usedAt: Date;
   used: boolean;

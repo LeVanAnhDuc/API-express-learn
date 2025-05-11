@@ -45,6 +45,8 @@ class AuthRepo extends Repository {
       },
     );
   };
+
+  updatePasswordById = async ({ id, password }) => await this.findByIdAndUpdate(id, { password });
 }
 
 export default AuthRepo;

@@ -3,7 +3,7 @@ import UserResetPasswordToken from '../models/passwordResetToken.model';
 // repositories
 import Repository from './base.repo';
 
-class PasswordResetTokenRepo extends Repository {
+class UserResetPasswordTokenRepo extends Repository {
   constructor() {
     super(UserResetPasswordToken, 'UserResetPasswordToken');
   }
@@ -19,6 +19,22 @@ class PasswordResetTokenRepo extends Repository {
       resetTokenExpireAt,
     });
   };
+
+  updateVerifyOTP = async (token) => {
+    return await this.findOneAndUpdate(
+      { resetToken: token },
+      {
+        otpVerified: true,
+        otpCode: null,
+        otpExpireAt: null,
+      },
+    );
+  };
+
+  getVerifiedOTP = async (token) => await this.findOne({ resetToken: token, otpVerified: true });
+
+  usedForPasswordResetToken = async (token) =>
+    await this.findOneAndUpdate({ resetToken: token }, { used: true, usedAt: Date.now() });
 }
 
-export default PasswordResetTokenRepo;
+export default UserResetPasswordTokenRepo;

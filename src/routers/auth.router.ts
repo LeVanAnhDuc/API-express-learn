@@ -4,12 +4,13 @@ import express from 'express';
 import AuthController from '../controllers/auth.controller';
 // schemas
 import {
-  forgotPasswordSchema,
+  confirmOpForgotPasswordSchema,
   loginSchema,
   reSendOtpSchema,
   sendOtpForgotPassword,
   signupSchema,
   signupVerifySchema,
+  updatePasswordForgotPasswordSchema,
 } from '../schema/auth.schema';
 // middlewares
 import { validateSchema } from '../middlewares/validate.middleware';
@@ -17,8 +18,17 @@ import { validateSchema } from '../middlewares/validate.middleware';
 import CONSTANTS from '../constants';
 import { asyncHandler } from '../helper';
 
-const { LOGIN, REFRESH_TOKEN, RESEND_OTP, SIGNUP, VERIFY_SIGNUP, LOGOUT, FORGOT_PASSWORD, SEND_OTP_FORGOT_PASSWORD } =
-  CONSTANTS.END_POINTS;
+const {
+  LOGIN,
+  REFRESH_TOKEN,
+  RESEND_OTP,
+  SIGNUP,
+  VERIFY_SIGNUP,
+  LOGOUT,
+  CONFIRM_OTP_FORGOT_PASSWORD,
+  SEND_OTP_FORGOT_PASSWORD,
+  UPDATE_PASSWORD_FORGOT_PASSWORD,
+} = CONSTANTS.END_POINTS;
 
 const router = express.Router();
 
@@ -33,11 +43,16 @@ router.post(
   validateSchema({ body: sendOtpForgotPassword }),
   asyncHandler(AuthController.sendOtpForgotPassword),
 );
-// router.post(
-//   FORGOT_PASSWORD,
-//   validateSchema({ body: forgotPasswordSchema }),
-//   asyncHandler(AuthController.forgotPassword),
-// );
+router.post(
+  CONFIRM_OTP_FORGOT_PASSWORD,
+  validateSchema({ body: confirmOpForgotPasswordSchema }),
+  asyncHandler(AuthController.confirmOpForgotPassword),
+);
+router.post(
+  UPDATE_PASSWORD_FORGOT_PASSWORD,
+  validateSchema({ body: updatePasswordForgotPasswordSchema }),
+  asyncHandler(AuthController.updatePasswordForgotPassword),
+);
 
 // Forgot Password
 // Change Password,
